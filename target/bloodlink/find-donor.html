@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BloodLink — Find Donor</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    .find-layout { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; padding: 2.5rem 0; }
+    
+    /* FILTER SIDEBAR */
+    .filter-sidebar {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 20px; padding: 1.8rem;
+      position: sticky; top: 88px; height: fit-content;
+    }
+    .filter-title { font-size: 1rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text); }
+    .filter-section { margin-bottom: 1.5rem; }
+    .filter-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); margin-bottom: 0.7rem; }
+    .blood-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .blood-chip {
+      border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 0.35rem 0.7rem; font-size: 0.85rem; font-weight: 700;
+      cursor: pointer; transition: all 0.2s; color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+    }
+    .blood-chip:hover, .blood-chip.active { border-color: var(--red); background: var(--red-light); color: var(--red); }
+    .avail-toggle { display: flex; gap: 0.5rem; }
+    .avail-btn {
+      flex: 1; border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 0.5rem; font-size: 0.8rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; background: var(--white);
+      font-family: 'Plus Jakarta Sans', sans-serif; text-align: center; color: var(--text);
+    }
+    .avail-btn.active { border-color: var(--red); background: var(--red-light); color: var(--red); }
+    .apply-btn {
+      width: 100%; background: var(--red); color: var(--white);
+      border: none; padding: 0.75rem; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 700; cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s;
+      margin-top: 1rem;
+    }
+    .apply-btn:hover { background: #A50D26; }
+    .clear-btn {
+      width: 100%; background: none; border: 1.5px solid var(--border);
+      color: var(--text-mid); padding: 0.65rem; border-radius: 10px;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s; margin-top: 0.5rem;
+    }
+    .clear-btn:hover { border-color: var(--red); color: var(--red); }
+
+    /* RESULTS AREA */
+    .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .results-count { font-size: 0.9rem; color: var(--text-light); }
+    .results-count strong { color: var(--text); font-size: 1.1rem; }
+    .sort-select {
+      border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 0.5rem 0.9rem; font-size: 0.85rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text); background: var(--white);
+      outline: none; cursor: pointer;
+    }
+
+    /* SEARCH BAR */
+    .search-bar-wrap {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.5rem;
+      display: grid; grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 1rem; align-items: end; margin-bottom: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .search-btn {
+      background: var(--red); color: var(--white); border: none;
+      padding: 0.75rem 1.4rem; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 700; cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .search-btn:hover { background: #A50D26; }
+
+    /* DONOR CARDS */
+    .donors-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 1.2rem; }
+    .donor-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.5rem; transition: all 0.25s;
+      position: relative; animation: fadeUp 0.4s ease both;
+    }
+    .donor-card:hover { box-shadow: 0 8px 30px var(--shadow); border-color: var(--red-mid); transform: translateY(-2px); }
+    .donor-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+    .donor-avatar {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--red-light), var(--red-mid));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; font-weight: 700;
+      font-family: 'Cormorant Garamond', serif; color: var(--red);
+    }
+    .donor-name { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .donor-meta { font-size: 0.82rem; color: var(--text-light); line-height: 1.6; }
+    .donor-footer { display: flex; gap: 0.6rem; margin-top: 1.2rem; }
+    .btn-contact {
+      flex: 1; background: var(--red); color: var(--white);
+      border: none; padding: 0.6rem; border-radius: 9px;
+      font-size: 0.82rem; font-weight: 700; cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s;
+    }
+    .btn-contact:hover { background: #A50D26; }
+    .btn-view {
+      border: 1.5px solid var(--border); background: none;
+      color: var(--text-mid); padding: 0.6rem 0.9rem;
+      border-radius: 9px; font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s;
+    }
+    .btn-view:hover { border-color: var(--red); color: var(--red); }
+    .donations-badge {
+      font-size: 0.78rem; color: var(--text-light);
+      background: var(--bg2); border-radius: 6px;
+      padding: 0.2rem 0.5rem; margin-top: 0.4rem; display: inline-block;
+    }
+
+    /* MODAL */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--white); border-radius: 24px; padding: 2.5rem;
+      max-width: 460px; width: 90%; animation: fadeUp 0.3s ease;
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .modal-header h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 700; }
+    .modal-close { background: var(--bg2); border: none; border-radius: 8px; width: 34px; height: 34px; cursor: pointer; font-size: 1.1rem; }
+    .modal-info-row { display: flex; justify-content: space-between; padding: 0.7rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    .modal-info-row:last-of-type { border-bottom: none; }
+    .modal-info-row .lbl { color: var(--text-light); }
+    .modal-info-row .val { font-weight: 600; color: var(--text); }
+    .modal-actions { display: flex; gap: 0.7rem; margin-top: 1.5rem; }
+    .btn-full { flex: 1; background: var(--red); color: var(--white); border: none; padding: 0.8rem; border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .btn-outline2 { flex: 1; background: none; border: 1.5px solid var(--border); color: var(--text); padding: 0.8rem; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    .no-results { text-align: center; padding: 4rem; color: var(--text-light); grid-column: 1/-1; }
+    .no-results .icon { font-size: 3rem; margin-bottom: 1rem; }
+
+    @media(max-width:768px) {
+      .find-layout { grid-template-columns: 1fr; }
+      .filter-sidebar { position: static; }
+      .search-bar-wrap { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">Blood<span>Link</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="find-donor.html" class="active">Find Donor</a></li>
+    <li><a href="urgent.html">Urgent</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-ghost">Login</a>
+    <a href="register.html" class="btn-red">Register</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1>Find Blood Donors</h1>
+    <p>Search from 12,400+ verified donors across 48 cities</p>
+  </div>
+</div>
+
+<section class="section-sm">
+  <div class="container">
+    <!-- SEARCH BAR -->
+    <div class="search-bar-wrap">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Blood Group</label>
+        <select class="form-select" id="bgFilter">
+          <option value="">All Groups</option>
+          <option>A+</option><option>A−</option><option>B+</option><option>B−</option>
+          <option>AB+</option><option>AB−</option><option>O+</option><option>O−</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">City</label>
+        <input type="text" class="form-input" id="cityFilter" placeholder="e.g. Mumbai"/>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Urgency</label>
+        <select class="form-select" id="urgFilter">
+          <option value="">Any Time</option>
+          <option>Today</option>
+          <option>This Week</option>
+        </select>
+      </div>
+      <button class="search-btn" onclick="applySearch()">🔍 Search</button>
+    </div>
+
+    <div class="find-layout">
+      <!-- SIDEBAR -->
+      <div class="filter-sidebar">
+        <div class="filter-title">🎛 Filters</div>
+        <div class="filter-section">
+          <div class="filter-label">Blood Group</div>
+          <div class="blood-chips">
+            <div class="blood-chip active" onclick="toggleChip(this)">All</div>
+            <div class="blood-chip" onclick="toggleChip(this)">A+</div>
+            <div class="blood-chip" onclick="toggleChip(this)">A−</div>
+            <div class="blood-chip" onclick="toggleChip(this)">B+</div>
+            <div class="blood-chip" onclick="toggleChip(this)">B−</div>
+            <div class="blood-chip" onclick="toggleChip(this)">AB+</div>
+            <div class="blood-chip" onclick="toggleChip(this)">AB−</div>
+            <div class="blood-chip" onclick="toggleChip(this)">O+</div>
+            <div class="blood-chip" onclick="toggleChip(this)">O−</div>
+          </div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-label">Availability</div>
+          <div class="avail-toggle">
+            <div class="avail-btn active" onclick="toggleAvail(this)">All</div>
+            <div class="avail-btn" onclick="toggleAvail(this)">Available</div>
+          </div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-label">State</div>
+          <select class="form-select" style="font-size:0.85rem">
+            <option value="">All States</option>
+            <option>Maharashtra</option>
+            <option>Delhi</option>
+            <option>Karnataka</option>
+            <option>Tamil Nadu</option>
+          </select>
+        </div>
+        <div class="filter-section">
+          <div class="filter-label">Min Donations</div>
+          <select class="form-select" style="font-size:0.85rem">
+            <option value="">Any</option>
+            <option>1+</option>
+            <option>3+</option>
+            <option>5+</option>
+          </select>
+        </div>
+        <button class="apply-btn" onclick="applySearch()">Apply Filters</button>
+        <button class="clear-btn" onclick="clearFilters()">Clear All</button>
+      </div>
+
+      <!-- RESULTS -->
+      <div>
+        <div class="results-header">
+          <div class="results-count"><strong id="countNum">12</strong> donors found</div>
+          <select class="sort-select" onchange="sortDonors(this.value)">
+            <option value="name">Sort by Name</option>
+            <option value="donations">Most Donations</option>
+            <option value="recent">Most Recent</option>
+          </select>
+        </div>
+        <div class="donors-grid" id="donorsGrid"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="mName">Donor</h3>
+      <button class="modal-close" onclick="document.getElementById('modalOverlay').classList.remove('open')">✕</button>
+    </div>
+    <div id="mInfo"></div>
+    <div class="modal-actions">
+      <button class="btn-full" onclick="sendRequest()">📨 Send Request</button>
+      <button class="btn-outline2" onclick="document.getElementById('modalOverlay').classList.remove('open')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-logo">Blood<span>Link</span></div>
+  <p style="margin-top:0.5rem;">© 2025 BloodLink. Saving lives every day.</p>
+</footer>
+
+<div class="toast" id="toast"></div>
+<script>
+let donorsData = [];
+let filtered = [];
+
+async function loadDonors() {
+  const bg = document.getElementById('bgFilter').value;
+  const city = document.getElementById('cityFilter').value.trim();
+  let url = '/bloodlink/api/donors';
+  if (bg || city) {
+    url = `/bloodlink/api/donors/search?bloodGroup=${encodeURIComponent(bg)}&city=${encodeURIComponent(city)}`;
+  }
+  try {
+    const res = await fetch(url, { credentials: 'include' });
+    const data = await res.json();
+    if (data.success) {
+      donorsData = data.donors.map(d => ({
+        id: d.id, name: d.firstName + ' ' + d.lastName,
+        blood: d.bloodGroup, city: d.city, state: d.state,
+        age: d.age, donations: d.totalDonations, available: d.available, phone: d.phone
+      }));
+      filtered = [...donorsData];
+      renderDonors(filtered);
+    }
+  } catch(e) {
+    document.getElementById('donorsGrid').innerHTML = '<div class="no-results"><div class="icon">⚠️</div><p>Could not load donors. Make sure Tomcat is running.</p></div>';
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('bg')) document.getElementById('bgFilter').value = params.get('bg');
+  loadDonors();
+});
+
+function renderDonors(data) {
+  const grid = document.getElementById('donorsGrid');
+  document.getElementById('countNum').textContent = data.length;
+  if (!data.length) {
+    grid.innerHTML = `<div class="no-results"><div class="icon">🔍</div><p>No donors found. Try adjusting your filters.</p></div>`;
+    return;
+  }
+  grid.innerHTML = data.map((d,i) => `
+    <div class="donor-card" style="animation-delay:${i*0.06}s">
+      <div class="donor-card-top">
+        <div style="display:flex;gap:0.9rem;align-items:center">
+          <div class="donor-avatar">${d.name[0]}</div>
+          <div>
+            <div class="donor-name">${d.name}</div>
+            <div class="blood-pill" style="width:40px;height:40px;font-size:0.85rem;display:inline-flex">${d.blood}</div>
+          </div>
+        </div>
+        ${d.available ? '<span class="tag-available">● Available</span>' : '<span class="tag-unavailable">● Busy</span>'}
+      </div>
+      <div class="donor-meta">
+        📍 ${d.city}, ${d.state}<br>
+        🎂 ${d.age} years old<br>
+      </div>
+      <div class="donations-badge">💉 ${d.donations} donation${d.donations!==1?'s':''} made</div>
+      <div class="donor-footer">
+        ${d.available ? `<button class="btn-contact" onclick='openModal(${JSON.stringify(d)})'>📞 Contact</button>` : `<button class="btn-contact" style="background:var(--bg2);color:var(--text-light);cursor:not-allowed" disabled>Unavailable</button>`}
+        <a href="donor-profile.html?id=${d.id}" class="btn-view" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none">View Profile</a>
+      </div>
+    </div>`).join('');
+}
+
+function applySearch() {
+  loadDonors();
+}
+
+function toggleChip(el) {
+  document.querySelectorAll('.blood-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const bg = el.textContent === 'All' ? '' : el.textContent;
+  document.getElementById('bgFilter').value = bg;
+  applySearch();
+}
+function toggleAvail(el) {
+  document.querySelectorAll('.avail-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+function clearFilters() {
+  document.getElementById('bgFilter').value = '';
+  document.getElementById('cityFilter').value = '';
+  document.querySelectorAll('.blood-chip').forEach((c,i) => c.classList.toggle('active', i===0));
+  loadDonors();
+}
+function sortDonors(by) {
+  if (by==='donations') filtered.sort((a,b) => b.donations - a.donations);
+  else if (by==='name') filtered.sort((a,b) => a.name.localeCompare(b.name));
+  renderDonors(filtered);
+}
+let currentDonor = null;
+function openModal(d) {
+  currentDonor = d;
+  document.getElementById('mName').textContent = d.name;
+  document.getElementById('mInfo').innerHTML = `
+    <div class="modal-info-row"><span class="lbl">Blood Group</span><span class="val">${d.blood}</span></div>
+    <div class="modal-info-row"><span class="lbl">City</span><span class="val">${d.city}, ${d.state}</span></div>
+    <div class="modal-info-row"><span class="lbl">Age</span><span class="val">${d.age} years</span></div>
+    <div class="modal-info-row"><span class="lbl">Donations Made</span><span class="val">${d.donations}</span></div>
+    <div class="modal-info-row"><span class="lbl">Status</span><span class="val">${d.available ? '✅ Available' : '⏸ Unavailable'}</span></div>
+    <div class="modal-info-row"><span class="lbl">Phone</span><span class="val">+91 98***43210 (after request)</span></div>`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay'))
+    document.getElementById('modalOverlay').classList.remove('open');
+}
+function sendRequest() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  showToast(`📨 Request sent to ${currentDonor?.name}!`);
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+// initial load handled by DOMContentLoaded above
+</script>
+</body>
+</html>

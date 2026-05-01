@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BloodLink — About & Contact</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    .about-hero {
+      background: linear-gradient(135deg, var(--red), #8B0000);
+      color: var(--white); padding: 5rem 0 4rem;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .about-hero::before {
+      content: ''; position: absolute;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      top: -200px; right: -100px;
+    }
+    .about-hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.5rem, 5vw, 3.8rem); font-weight: 700;
+      margin-bottom: 1rem; position: relative; z-index: 1;
+    }
+    .about-hero p { font-size: 1.1rem; opacity: 0.85; max-width: 580px; margin: 0 auto; position: relative; z-index: 1; }
+
+    /* MISSION */
+    .mission-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .mission-text h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem; font-weight: 700; margin-bottom: 1rem;
+    }
+    .mission-text p { color: var(--text-light); line-height: 1.8; margin-bottom: 1rem; font-size: 0.95rem; }
+    .mission-visual {
+      background: var(--red-light); border-radius: 24px;
+      padding: 3rem; text-align: center;
+    }
+    .big-stat {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 4rem; font-weight: 700; color: var(--red);
+      line-height: 1;
+    }
+    .big-stat-label { font-size: 1rem; color: var(--text-light); margin-top: 0.5rem; font-weight: 500; }
+    .mission-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
+    .mstat { background: var(--white); border-radius: 14px; padding: 1.2rem; text-align: center; }
+    .mstat-num { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--red); }
+    .mstat-label { font-size: 0.8rem; color: var(--text-light); font-weight: 500; }
+
+    /* TEAM */
+    .team-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+    .team-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 20px; padding: 2rem; text-align: center;
+      transition: all 0.25s;
+    }
+    .team-card:hover { box-shadow: 0 10px 30px var(--shadow); transform: translateY(-4px); }
+    .team-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--red-light), var(--red-mid));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 700; color: var(--red);
+      margin: 0 auto 1rem;
+    }
+    .team-name { font-size: 1rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .team-role { font-size: 0.82rem; color: var(--red); font-weight: 600; margin-bottom: 0.6rem; }
+    .team-bio { font-size: 0.85rem; color: var(--text-light); line-height: 1.6; }
+
+    /* VALUES */
+    .values-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+    .value-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 18px; padding: 2rem;
+      transition: all 0.25s;
+    }
+    .value-card:hover { box-shadow: 0 8px 24px var(--shadow); }
+    .value-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: var(--red-light); display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 1rem;
+    }
+    .value-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .value-card p { font-size: 0.85rem; color: var(--text-light); line-height: 1.6; }
+
+    /* CONTACT */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+    .contact-info h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; font-weight: 700; margin-bottom: 1rem;
+    }
+    .contact-info p { color: var(--text-light); line-height: 1.8; margin-bottom: 2rem; font-size: 0.95rem; }
+    .contact-method {
+      display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem;
+    }
+    .cm-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--red-light); display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .cm-text h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .cm-text p { font-size: 0.85rem; color: var(--text-light); margin: 0; }
+
+    .contact-form {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 24px; padding: 2.5rem;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+    }
+    .contact-form h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem; }
+    .send-btn {
+      width: 100%; background: var(--red); color: var(--white);
+      border: none; padding: 0.85rem; border-radius: 10px;
+      font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.25s; margin-top: 0.5rem;
+    }
+    .send-btn:hover { background: #A50D26; box-shadow: 0 6px 20px rgba(200,16,46,0.3); }
+
+    .section-header { text-align: center; margin-bottom: 3rem; }
+    .section-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem;
+    }
+    .section-header p { color: var(--text-light); }
+
+    @media(max-width:768px) {
+      .mission-grid, .contact-grid { grid-template-columns: 1fr; }
+      .team-grid, .values-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">Blood<span>Link</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="find-donor.html">Find Donor</a></li>
+    <li><a href="urgent.html">Urgent</a></li>
+    <li><a href="about.html" class="active">About</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-ghost">Login</a>
+    <a href="register.html" class="btn-red">Register</a>
+  </div>
+</nav>
+
+<!-- ABOUT HERO -->
+<div class="about-hero">
+  <div class="container">
+    <div class="chip" style="background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.3);margin-bottom:1.2rem">🩸 Our Story</div>
+    <h1>Built to Save Lives,<br>One Drop at a Time</h1>
+    <p>BloodLink was founded in 2023 with a simple mission: no one should lose their life because they couldn't find a blood donor in time.</p>
+  </div>
+</div>
+
+<!-- MISSION -->
+<section class="section">
+  <div class="container">
+    <div class="mission-grid">
+      <div class="mission-text fade-up">
+        <div class="chip" style="margin-bottom:1rem">Our Mission</div>
+        <h2>Bridging the Gap Between Life and Death</h2>
+        <p>Every 2 seconds, someone in India needs blood. Yet thousands of patients suffer because they can't connect with willing donors fast enough. BloodLink changes that.</p>
+        <p>We built a platform that makes finding a blood donor as simple as searching for a restaurant — fast, location-aware, and immediate. Our verified donor network spans 48 cities and is growing every day.</p>
+        <p>We believe that geography, time, and technology should never be barriers to saving a human life.</p>
+      </div>
+      <div class="mission-visual fade-up" style="animation-delay:0.15s">
+        <div class="big-stat">5,200+</div>
+        <div class="big-stat-label">Lives saved through BloodLink</div>
+        <div class="mission-stats">
+          <div class="mstat"><div class="mstat-num">12K+</div><div class="mstat-label">Donors</div></div>
+          <div class="mstat"><div class="mstat-num">48</div><div class="mstat-label">Cities</div></div>
+          <div class="mstat"><div class="mstat-num">98%</div><div class="mstat-label">Fulfillment Rate</div></div>
+          <div class="mstat"><div class="mstat-num">2yr</div><div class="mstat-label">In Operation</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section class="section" style="background:var(--bg2)">
+  <div class="container">
+    <div class="section-header">
+      <div class="chip" style="margin-bottom:1rem">What We Stand For</div>
+      <h2>Our Core Values</h2>
+      <p>The principles that guide everything we do at BloodLink</p>
+    </div>
+    <div class="values-grid">
+      <div class="value-card fade-up">
+        <div class="value-icon">🛡️</div>
+        <h3>Privacy First</h3>
+        <p>Donor information is never shared without explicit consent. Your privacy is sacred and we build every feature with that in mind.</p>
+      </div>
+      <div class="value-card fade-up" style="animation-delay:0.1s">
+        <div class="value-icon">⚡</div>
+        <h3>Speed When It Matters</h3>
+        <p>In emergencies, every minute counts. Our platform is optimized to connect seekers with donors within minutes, not hours.</p>
+      </div>
+      <div class="value-card fade-up" style="animation-delay:0.2s">
+        <div class="value-icon">✅</div>
+        <h3>Verified & Trusted</h3>
+        <p>All donors are verified through our multi-step process. Hospitals and seekers can rely on the accuracy of every profile.</p>
+      </div>
+      <div class="value-card fade-up" style="animation-delay:0.3s">
+        <div class="value-icon">🤝</div>
+        <h3>Community Driven</h3>
+        <p>BloodLink is powered by a community of generous donors. We celebrate every act of kindness and recognize our heroes.</p>
+      </div>
+      <div class="value-card fade-up" style="animation-delay:0.4s">
+        <div class="value-icon">🌍</div>
+        <h3>Inclusive Access</h3>
+        <p>Whether you're in a metro city or a tier-3 town, BloodLink works for you. We're committed to reaching every corner of India.</p>
+      </div>
+      <div class="value-card fade-up" style="animation-delay:0.5s">
+        <div class="value-icon">💡</div>
+        <h3>Continuously Improving</h3>
+        <p>We listen to our community and constantly evolve our platform to better serve donors, seekers, and healthcare providers.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="chip" style="margin-bottom:1rem">The People Behind BloodLink</div>
+      <h2>Meet Our Team</h2>
+      <p>Passionate people working to make blood donation seamless</p>
+    </div>
+    <div class="team-grid">
+      <div class="team-card fade-up">
+        <div class="team-avatar">R</div>
+        <div class="team-name">Rani Aghav</div>
+        <div class="team-role">Co-Founder & CEO</div>
+        <div class="team-bio">Former software engineer who lost a family member due to unavailability of blood. Founded BloodLink to ensure no family faces the same pain.</div>
+      </div>
+      <div class="team-card fade-up" style="animation-delay:0.1s">
+        <div class="team-avatar">T</div>
+        <div class="team-name">Tejashree Torave</div>
+        <div class="team-role">Co-Founder & CTO</div>
+        <div class="team-bio">Full-stack engineer and healthcare tech enthusiast. Built the entire BloodLink platform from the ground up with a focus on reliability and speed.</div>
+      </div>
+      <div class="team-card fade-up" style="animation-delay:0.2s">
+        <div class="team-avatar">S</div>
+        <div class="team-name">sakshi Jadhav</div>
+        <div class="team-role">Medical Advisor</div>
+        <div class="team-bio">Senior hematologist with 15 years of experience. Ensures BloodLink follows the highest medical standards for blood donation and transfusion.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section" style="background:var(--bg2)" id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="chip" style="margin-bottom:1rem">Get in Touch</div>
+        <h2>We'd Love to Hear From You</h2>
+        <p>Have questions, feedback, or want to partner with us? Our team is here to help and we typically respond within 24 hours.</p>
+        <div class="contact-method">
+          <div class="cm-icon">📧</div>
+          <div class="cm-text">
+            <h4>Email Us</h4>
+            <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="295a5c5959465b5d694b4546464d45404742074047">[email&#160;protected]</a><br><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c6b6a7b4b2a8a3b4b5aeafb6b586a4aaa9a9a2aaafa8ade8afa8">[email&#160;protected]</a></p>
+          </div>
+        </div>
+        <div class="contact-method">
+          <div class="cm-icon">📞</div>
+          <div class="cm-text">
+            <h4>Call Us</h4>
+            <p>1800-BLOOD-LINK (Toll Free)<br>Mon–Sat, 9AM – 6PM IST</p>
+          </div>
+        </div>
+        <div class="contact-method">
+          <div class="cm-icon">📍</div>
+          <div class="cm-text">
+            <h4>Our Office</h4>
+            <p>BloodLink Technologies Pvt. Ltd.<br>Bandra Kurla Complex, Mumbai – 400051</p>
+          </div>
+        </div>
+        <div class="contact-method">
+          <div class="cm-icon">🏥</div>
+          <div class="cm-text">
+            <h4>Hospital Partnerships</h4>
+            <p>Want to list your hospital or blood bank? Contact us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="20504152544e45525360424c4f4f444c494e4b0e494e">[email&#160;protected]</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form fade-up">
+        <h3>Send Us a Message</h3>
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input type="text" class="form-input" placeholder="Raj Sharma"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" placeholder="raj@example.com"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subject</label>
+          <select class="form-select">
+            <option>General Inquiry</option>
+            <option>Technical Support</option>
+            <option>Partnership / Hospital</option>
+            <option>Report an Issue</option>
+            <option>Feedback</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-input" rows="5" style="resize:vertical" placeholder="How can we help you?"></textarea>
+        </div>
+        <button class="send-btn" onclick="sendMsg()">📨 Send Message</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section-sm">
+  <div class="container">
+    <div style="background:linear-gradient(135deg,var(--red),#8B0000);border-radius:24px;padding:3.5rem;text-align:center;color:white">
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;margin-bottom:1rem">Ready to Be a Hero?</h2>
+      <p style="opacity:0.85;margin-bottom:2rem">Join 12,400+ registered donors making a difference every day.</p>
+      <a href="register.html" style="background:white;color:var(--red);padding:0.85rem 2.2rem;border-radius:10px;font-weight:700;text-decoration:none;display:inline-block;transition:all 0.2s" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">Register as a Donor →</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-logo">Blood<span>Link</span></div>
+  <p style="margin-top:0.5rem;">Connecting donors with those in need, saving lives every day.</p>
+  <p style="margin-top:1rem;font-size:0.78rem;opacity:0.5;">© 2025 BloodLink. All ri

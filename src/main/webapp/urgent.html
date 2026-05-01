@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BloodLink — Urgent Requests</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    .urgent-grid { display: grid; grid-template-columns: 1fr 340px; gap: 2rem; padding: 3rem 0; }
+
+    .post-btn {
+      background: var(--red); color: var(--white); border: none;
+      padding: 0.7rem 1.4rem; border-radius: 10px; font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .post-btn:hover { background: #A50D26; box-shadow: 0 4px 16px rgba(200,16,46,0.3); }
+
+    .filter-tabs { display: flex; gap: 0.4rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .ftab {
+      padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; border: 1.5px solid var(--border);
+      background: var(--white); color: var(--text-mid);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .ftab.active { background: var(--red); color: var(--white); border-color: var(--red); }
+
+    .urgent-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-left: 5px solid var(--red);
+      border-radius: 0 16px 16px 0; padding: 1.5rem 1.8rem;
+      margin-bottom: 1rem; display: grid;
+      grid-template-columns: auto 1fr auto; gap: 1.2rem;
+      align-items: center; transition: all 0.25s;
+      animation: fadeUp 0.4s ease both;
+    }
+    .urgent-card:hover { box-shadow: 0 6px 24px var(--shadow); transform: translateX(4px); }
+    .urgent-card.yellow { border-left-color: var(--warning); }
+    .urgent-card.green { border-left-color: var(--success); opacity: 0.7; }
+    .uc-blood {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: var(--red); color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 700;
+    }
+    .uc-blood.yellow { background: var(--warning); }
+    .uc-blood.green { background: var(--success); }
+    .uc-hospital { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .uc-meta { font-size: 0.83rem; color: var(--text-light); line-height: 1.7; }
+    .uc-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    .uc-tag {
+      background: var(--red-light); color: var(--red);
+      border: 1px solid var(--red-mid); border-radius: 6px;
+      padding: 0.15rem 0.55rem; font-size: 0.72rem; font-weight: 700;
+    }
+    .uc-tag.yellow { background: #FEF3C7; color: var(--warning); border-color: #FDE68A; }
+    .uc-right { display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end; }
+    .time-badge {
+      font-size: 0.78rem; font-weight: 700; color: var(--red);
+      background: var(--red-light); border-radius: 6px; padding: 0.25rem 0.6rem;
+      animation: blink 1.5s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .time-badge.yellow { color: var(--warning); background: #FEF3C7; animation: none; }
+    .time-badge.green { color: var(--success); background: #DCFCE7; animation: none; }
+    .respond-btn {
+      background: var(--red); color: var(--white); border: none;
+      padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.82rem; font-weight: 700;
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s;
+    }
+    .respond-btn:hover { background: #A50D26; }
+    .respond-btn.done { background: var(--bg2); color: var(--text-light); cursor: default; }
+
+    /* POST FORM */
+    .post-form-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 20px; padding: 1.8rem;
+      position: sticky; top: 88px; height: fit-content;
+    }
+    .post-form-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 1.3rem; }
+    .submit-btn {
+      width: 100%; background: var(--red); color: var(--white);
+      border: none; padding: 0.8rem; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 700; cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s; margin-top: 0.5rem;
+    }
+    .submit-btn:hover { background: #A50D26; }
+    .urgency-select { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.1rem; }
+    .urg-opt {
+      border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 0.7rem; text-align: center; cursor: pointer; transition: all 0.2s;
+      font-size: 0.82rem; font-weight: 600; color: var(--text-mid);
+    }
+    .urg-opt.selected { border-color: var(--red); background: var(--red-light); color: var(--red); }
+
+    /* STATS BAR */
+    .stats-bar {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 1rem; margin-bottom: 2rem;
+    }
+    .sbar {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.2rem; text-align: center;
+    }
+    .sbar-num { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--red); }
+    .sbar-label { font-size: 0.75rem; color: var(--text-light); font-weight: 500; }
+
+    @media(max-width:768px) {
+      .urgent-grid { grid-template-columns: 1fr; }
+      .post-form-card { position: static; }
+      .urgent-card { grid-template-columns: auto 1fr; }
+      .uc-right { grid-column: 1/-1; flex-direction: row; align-items: center; }
+      .stats-bar { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">Blood<span>Link</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="find-donor.html">Find Donor</a></li>
+    <li><a href="urgent.html" class="active">Urgent</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-ghost">Login</a>
+    <a href="register.html" class="btn-red">Register</a>
+  </div>
+</nav>
+
+<div class="page-header" style="background:linear-gradient(135deg,#991B1B,var(--red))">
+  <div class="container">
+    <h1>🚨 Urgent Blood Requests</h1>
+    <p>Critical requests from hospitals and families — respond to save a life today</p>
+  </div>
+</div>
+
+<section class="section-sm">
+  <div class="container">
+    <div class="stats-bar">
+      <div class="sbar"><div class="sbar-num">18</div><div class="sbar-label">Active Requests</div></div>
+      <div class="sbar"><div class="sbar-num">5</div><div class="sbar-label">Critical (Today)</div></div>
+      <div class="sbar"><div class="sbar-num">243</div><div class="sbar-label">Responded This Month</div></div>
+      <div class="sbar"><div class="sbar-num">98%</div><div class="sbar-label">Fulfillment Rate</div></div>
+    </div>
+
+    <div class="urgent-grid">
+      <!-- LEFT: REQUESTS LIST -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;flex-wrap:wrap;gap:1rem">
+          <div class="filter-tabs">
+            <button class="ftab active" onclick="filterReqs('all',this)">All</button>
+            <button class="ftab" onclick="filterReqs('critical',this)">🔴 Critical</button>
+            <button class="ftab" onclick="filterReqs('urgent',this)">🟡 Urgent</button>
+            <button class="ftab" onclick="filterReqs('fulfilled',this)">✅ Fulfilled</button>
+          </div>
+        </div>
+
+        <div id="reqList">
+          <div class="urgent-card" data-type="critical" style="animation-delay:0s">
+            <div class="uc-blood">O−</div>
+            <div>
+              <div class="uc-hospital">Kokilaben Dhirubhai Ambani Hospital</div>
+              <div class="uc-meta">📍 Andheri West, Mumbai, Maharashtra<br>👤 Patient: Adult, surgery required · 📞 +91 22 3099 9999</div>
+              <div class="uc-tags"><span class="uc-tag">O−</span><span class="uc-tag">Surgery</span><span class="uc-tag">2 Units Needed</span></div>
+            </div>
+            <div class="uc-right">
+              <span class="time-badge">CRITICAL · NOW</span>
+              <button class="respond-btn" onclick="respond(this)">Respond</button>
+            </div>
+          </div>
+
+          <div class="urgent-card" data-type="critical" style="animation-delay:0.08s">
+            <div class="uc-blood">AB−</div>
+            <div>
+              <div class="uc-hospital">Apollo Hospitals</div>
+              <div class="uc-meta">📍 Navi Mumbai, Maharashtra<br>👤 Patient: Child, accident case · 📞 +91 22 6760 3000</div>
+              <div class="uc-tags"><span class="uc-tag">AB−</span><span class="uc-tag">Emergency</span><span class="uc-tag">1 Unit Needed</span></div>
+            </div>
+            <div class="uc-right">
+              <span class="time-badge">CRITICAL · 2h LEFT</span>
+              <button class="respond-btn" onclick="respond(this)">Respond</button>
+            </div>
+          </div>
+
+          <div class="urgent-card yellow" data-type="urgent" style="animation-delay:0.16s">
+            <div class="uc-blood yellow">B−</div>
+            <div>
+              <div class="uc-hospital">Sunrise Children's Hospital</div>
+              <div class="uc-meta">📍 Connaught Place, Delhi<br>👤 Patient: Infant, thalassemia · 📞 +91 11 4321 0000</div>
+              <div class="uc-tags"><span class="uc-tag yellow">B−</span><span class="uc-tag yellow">Thalassemia</span><span class="uc-tag yellow">Regular Needed</span></div>
+            </div>
+            <div class="uc-right">
+              <span class="time-badge yellow">URGENT · TODAY</span>
+              <button class="respond-btn" onclick="respond(this)">Respond</button>
+            </div>
+          </div>
+
+          <div class="urgent-card yellow" data-type="urgent" style="animation-delay:0.24s">
+            <div class="uc-blood yellow">A−</div>
+            <div>
+              <div class="uc-hospital">Fortis Hospital</div>
+              <div class="uc-meta">📍 Baner, Pune, Maharashtra<br>👤 Patient: Adult female, delivery · 📞 +91 20 6670 0000</div>
+              <div class="uc-tags"><span class="uc-tag yellow">A−</span><span class="uc-tag yellow">Maternity</span><span class="uc-tag yellow">3 Units Needed</span></div>
+            </div>
+            <div class="uc-right">
+              <span class="time-badge yellow">URGENT · TOMORROW</span>
+              <button class="respond-btn" onclick="respond(this)">Respond</button>
+            </div>
+          </div>
+
+          <div class="urgent-card yellow" data-type="urgent" style="animation-delay:0.32s">
+            <div class="uc-blood yellow">O+</div>
+            <div>
+              <div class="uc-hospital">Manipal Hospital</div>
+              <div class="uc-meta">📍 Whitefield, Bangalore, Karnataka<br>👤 Patient: Road accident · 📞 +91 80 2502 4444</div>
+              <div class="uc-tags"><span class="uc-tag yellow">O+</span><span class="uc-tag yellow">Accident</span><span class="uc-tag yellow">4 Units Needed</span></div>
+            </div>
+            <div class="uc-right">
+              <span class="time-badge yellow">URGENT · 2 DAYS</span>
+              <button class="respond-btn" onclick="respond(this)">Respond</button>
+            </div>
+          </div>
+
+          <div class="urgent-card green" data-type="fulfilled" style="animation-delay:0.4s">
+            <div class="uc-blood green">A+</div>
+            <div>
+              <div class="uc-hospital">Lilavati Hospital</div>
+              <div class="uc-meta">📍 Bandra, Mumbai · Fulfilled by Priya S. · Dec 28, 2024</div>
+              <div class="uc-tags"></div>
+            </div>
+            <div class="uc-right">
+              <span class="time-badge green">✅ FULFILLED</span>
+              <button class="respond-btn done" disabled>Done</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: POST FORM -->
+      <div>
+        <div class="post-form-card">
+          <h3>📢 Post an Urgent Request</h3>
+          <div class="form-group">
+            <label class="form-label">Hospital / Your Name *</label>
+            <input type="text" class="form-input" placeholder="Hospital name or your name"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Blood Group Needed *</label>
+            <select class="form-select">
+              <option value="">Select Blood Group</option>
+              <option>A+</option><option>A−</option><option>B+</option><option>B−</option>
+              <option>AB+</option><option>AB−</option><option>O+</option><option>O−</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Location *</label>
+            <input type="text" class="form-input" placeholder="Hospital address / City"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contact Number *</label>
+            <input type="tel" class="form-input" placeholder="+91 98765 43210"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Units Needed</label>
+            <input type="number" class="form-input" placeholder="e.g. 2" min="1" max="10"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Urgency Level</label>
+            <div class="urgency-select">
+              <div class="urg-opt selected" onclick="selectUrg(this)">🔴 Critical<br><small>Need today</small></div>
+              <div class="urg-opt" onclick="selectUrg(this)">🟡 Urgent<br><small>Within 3 days</small></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Additional Notes</label>
+            <textarea class="form-input" rows="3" style="resize:vertical" placeholder="Patient details, medical condition..."></textarea>
+          </div>
+          <button class="submit-btn" onclick="postRequest()">🚨 Post Request Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-logo">Blood<span>Link</span></div>
+  <p style="margin-top:0.5rem;">© 2025 BloodLink. Saving lives every day.</p>
+</footer>
+
+<div class="toast" id="toast"></div>
+<script>
+function filterReqs(type, el) {
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.urgent-card').forEach(c => {
+    if (type === 'all') c.style.display = '';
+    else c.style.display = c.dataset.type === type ? '' : 'none';
+  });
+}
+function selectUrg(el) {
+  document.querySelectorAll('.urg-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function respond(btn) {
+  btn.textContent = 'Responded ✓';
+  btn.classList.add('done');
+  btn.disabled = true;
+  showToast('✅ You responded! The hospital will contact you shortly.');
+}
+function postRequest() {
+  showToast('🚨 Request posted! Nearby donors have been notified.');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>

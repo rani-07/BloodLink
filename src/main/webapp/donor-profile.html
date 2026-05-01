@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BloodLink — Donor Profile</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    body { background: var(--bg2); }
+
+    .profile-hero {
+      background: linear-gradient(135deg, var(--red), #8B0000);
+      padding: 3rem 0 3rem; color: white; position: relative; overflow: hidden;
+    }
+    .profile-hero::after {
+      content: ''; position: absolute;
+      width: 400px; height: 400px; border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      top: -150px; right: -80px;
+    }
+    .hero-inner { display: flex; align-items: center; gap: 2rem; position: relative; z-index: 1; flex-wrap: wrap; }
+    .big-avatar {
+      width: 100px; height: 100px; border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 4px solid rgba(255,255,255,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.8rem; font-weight: 700; color: white;
+      flex-shrink: 0;
+    }
+    .hero-name { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .hero-meta { opacity: 0.85; font-size: 0.95rem; margin-bottom: 0.8rem; }
+    .hero-tags { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .htag {
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+      color: white; padding: 0.3rem 0.8rem; border-radius: 50px;
+      font-size: 0.78rem; font-weight: 600;
+    }
+    .blood-big {
+      margin-left: auto; width: 80px; height: 80px; border-radius: 50%;
+      background: white; color: var(--red);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* MAIN BODY */
+    .profile-body {
+      display: grid; grid-template-columns: 1fr 340px;
+      gap: 2rem;
+      padding-top: 2rem;
+      padding-bottom: 3rem;
+    }
+
+    /* INFO PANELS */
+    .info-panel {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 20px; padding: 1.8rem; margin-bottom: 1.5rem;
+    }
+    .info-panel h3 {
+      font-size: 0.88rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px; color: var(--text-light);
+      margin-bottom: 1.2rem; padding-bottom: 0.7rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .info-row {
+      display: flex; justify-content: space-between;
+      padding: 0.6rem 0; border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: var(--text-light); font-weight: 500; }
+    .info-value { font-weight: 600; color: var(--text); }
+
+    .stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-top: 2rem; margin-bottom: 1.5rem; }
+    .stat-box {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.2rem; text-align: center;
+    }
+    .stat-box-num { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 700; color: var(--red); }
+    .stat-box-label { font-size: 0.75rem; color: var(--text-light); font-weight: 500; margin-top: 0.2rem; }
+
+    /* SIDEBAR */
+    .sidebar-panel {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 20px; padding: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+    .sidebar-col {
+      height: fit-content;
+    }
+    .request-form h3 { font-size: 1rem; font-weight: 700; margin-bottom: 1.2rem; }
+    .send-btn {
+      width: 100%; background: var(--red); color: white;
+      border: none; padding: 0.85rem; border-radius: 12px;
+      font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.25s;
+      margin-top: 0.5rem;
+    }
+    .send-btn:hover { background: #A50D26; box-shadow: 0 6px 20px rgba(200,16,46,0.3); }
+    .call-btn {
+      width: 100%; background: none; border: 1.5px solid var(--border);
+      color: var(--text); padding: 0.75rem; border-radius: 12px;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s; margin-top: 0.6rem;
+    }
+    .call-btn:hover { border-color: var(--red); color: var(--red); }
+
+    .compatibility-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .compat-item {
+      border-radius: 10px; padding: 0.6rem; text-align: center;
+      font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 700;
+    }
+    .compat-yes { background: #DCFCE7; color: #15803D; }
+    .compat-no  { background: var(--bg2); color: var(--text-light); }
+
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      color: rgba(255,255,255,0.8); text-decoration: none;
+      font-size: 0.88rem; font-weight: 600;
+      margin-bottom: 1.5rem; transition: color 0.2s;
+    }
+    .back-btn:hover { color: white; }
+
+    .history-list { }
+    .history-item {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 0.75rem 0; border-bottom: 1px solid var(--border);
+    }
+    .history-item:last-child { border-bottom: none; }
+    .h-dot {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--red-light); display: flex; align-items: center;
+      justify-content: center; font-size: 1rem; flex-shrink: 0;
+    }
+    .h-text strong { font-size: 0.88rem; display: block; }
+    .h-text span { font-size: 0.78rem; color: var(--text-light); }
+
+    @media(max-width:768px) {
+      .profile-body { grid-template-columns: 1fr; padding-top: 1.5rem; }
+      .hero-inner { flex-wrap: wrap; }
+      .blood-big { margin-left: 0; }
+      .stat-row { grid-template-columns: repeat(3,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">Blood<span>Link</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="find-donor.html" class="active">Find Donor</a></li>
+    <li><a href="urgent.html">Urgent</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-ghost">Login</a>
+    <a href="register.html" class="btn-red">Register</a>
+  </div>
+</nav>
+
+<!-- PROFILE HERO -->
+<div class="profile-hero">
+  <div class="container">
+    <a href="find-donor.html" class="back-btn">← Back to Search</a>
+    <div class="hero-inner">
+      <div class="big-avatar" id="avatarLetter">R</div>
+      <div>
+        <div class="hero-name" id="donorName">Rahul Mehta</div>
+        <div class="hero-meta" id="donorMeta">📍 Mumbai, Maharashtra &nbsp;·&nbsp; 🎂 28 years old</div>
+        <div class="hero-tags">
+          <span class="htag" id="availTag">✅ Available to Donate</span>
+          <span class="htag" id="donationsTag">💉 7 Donations</span>
+          <span class="htag">✔ Verified Donor</span>
+        </div>
+      </div>
+      <div class="blood-big" id="bloodBig">A+</div>
+    </div>
+  </div>
+</div>
+
+<section style="padding-bottom: 3rem;">
+  <div class="container">
+    <!-- STATS ROW -->
+    <div class="stat-row">
+      <div class="stat-box fade-up">
+        <div class="stat-box-num" id="statDonations">7</div>
+        <div class="stat-box-label">Total Donations</div>
+      </div>
+      <div class="stat-box fade-up" style="animation-delay:0.1s">
+        <div class="stat-box-num" id="statLives">21</div>
+        <div class="stat-box-label">Lives Saved</div>
+      </div>
+      <div class="stat-box fade-up" style="animation-delay:0.2s">
+        <div class="stat-box-num" id="statSince">2yr</div>
+        <div class="stat-box-label">Member Since</div>
+      </div>
+    </div>
+
+    <div class="profile-body">
+      <!-- LEFT -->
+      <div>
+        <div class="info-panel fade-up">
+          <h3>Personal Information</h3>
+          <div class="info-row"><span class="info-label">Full Name</span><span class="info-value" id="infoName">Rahul Mehta</span></div>
+          <div class="info-row"><span class="info-label">Blood Group</span><span class="info-value" id="infoBlood" style="color:var(--red)">A+</span></div>
+          <div class="info-row"><span class="info-label">Age</span><span class="info-value" id="infoAge">28 years</span></div>
+          <div class="info-row"><span class="info-label">Gender</span><span class="info-value" id="infoGender">Male</span></div>
+          <div class="info-row"><span class="info-label">City</span><span class="info-value" id="infoCity">Mumbai</span></div>
+          <div class="info-row"><span class="info-label">State</span><span class="info-value" id="infoState">Maharashtra</span></div>
+          <div class="info-row"><span class="info-label">Availability</span><span class="info-value" id="infoAvail">✅ Available</span></div>
+          <div class="info-row"><span class="info-label">Last Donation</span><span class="info-value" id="infoLastDon">Dec 15, 2024</span></div>
+          <div class="info-row"><span class="info-label">Next Eligible</span><span class="info-value" id="infoNextDon">Mar 15, 2025</span></div>
+        </div>
+
+        <div class="info-panel fade-up" style="animation-delay:0.1s">
+          <h3>Donation History</h3>
+          <div class="history-list" id="historyList">
+            <div class="history-item"><div class="h-dot">💉</div><div class="h-text"><strong>City General Hospital, Mumbai</strong><span>Dec 15, 2024</span></div></div>
+            <div class="history-item"><div class="h-dot">💉</div><div class="h-text"><strong>Apollo Medical Center, Pune</strong><span>Sep 10, 2024</span></div></div>
+            <div class="history-item"><div class="h-dot">💉</div><div class="h-text"><strong>Lilavati Hospital, Mumbai</strong><span>Jun 05, 2024</span></div></div>
+            <div class="history-item"><div class="h-dot">💉</div><div class="h-text"><strong>KEM Hospital, Mumbai</strong><span>Mar 20, 2024</span></div></div>
+          </div>
+        </div>
+
+        <div class="info-panel fade-up" style="animation-delay:0.15s">
+          <h3>Blood Compatibility — Can Donate To</h3>
+          <div class="compatibility-grid" id="compatGrid"></div>
+        </div>
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="sidebar-col">
+        <div class="sidebar-panel request-form fade-up" style="animation-delay:0.2s">
+          <h3>🩸 Send Donation Request</h3>
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-input" placeholder="Your name"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Your Phone</label>
+            <input type="tel" class="form-input" placeholder="+91 98765 43210"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Hospital / Location</label>
+            <input type="text" class="form-input" placeholder="Hospital name, city"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">When do you need it?</label>
+            <select class="form-select">
+              <option>Today (Urgent)</option>
+              <option>Tomorrow</option>
+              <option>Within 3 days</option>
+              <option>This week</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message (Optional)</label>
+            <textarea class="form-input" rows="3" style="resize:vertical" placeholder="Any additional details..."></textarea>
+          </div>
+          <button class="send-btn" onclick="sendRequest()">📨 Send Request</button>
+          <button class="call-btn" onclick="showToast('📞 Contact number revealed after request is accepted.')">📞 Request Phone Number</button>
+        </div>
+
+        <div class="sidebar-panel fade-up" style="animation-delay:0.25s">
+          <h3 style="font-size:0.88rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-light);margin-bottom:1rem;padding-bottom:0.7rem;border-bottom:1px solid var(--border)">🏅 Donor Badges</h3>
+          <div style="display:flex;flex-direction:column;gap:0.8rem">
+            <div style="display:flex;align-items:center;gap:0.8rem">
+              <span style="font-size:1.5rem">🏆</span>
+              <div><div style="font-size:0.88rem;font-weight:700">Regular Donor</div><div style="font-size:0.75rem;color:var(--text-light)">Donated 5+ times</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.8rem">
+              <span style="font-size:1.5rem">✅</span>
+              <div><div style="font-size:0.88rem;font-weight:700">Verified Profile</div><div style="font-size:0.75rem;color:var(--text-light)">Identity confirmed</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.8rem">
+              <span style="font-size:1.5rem">⚡</span>
+              <div><div style="font-size:0.88rem;font-weight:700">Quick Responder</div><div style="font-size:0.75rem;color:var(--text-light)">Responds within 1 hour</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-panel fade-up" style="animation-delay:0.3s">
+          <div style="font-size:0.78rem;color:var(--text-light);text-align:center;line-height:1.6">
+            🔒 This donor's personal contact info is protected. Send a request and they'll respond if available.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-logo">Blood<span>Link</span></div>
+  <p style="margin-top:0.5rem;">© 2025 BloodLink. Saving lives every day.</p>
+</footer>
+
+<div class="toast" id="toast"></div>
+<script>
+const compatibility = {
+  "A+":  ["A+","AB+"],
+  "A-":  ["A+","A-","AB+","AB-"],
+  "B+":  ["B+","AB+"],
+  "B-":  ["B+","B-","AB+","AB-"],
+  "AB+": ["AB+"],
+  "AB-": ["AB+","AB-"],
+  "O+":  ["A+","B+","AB+","O+"],
+  "O-":  ["A+","A-","B+","B-","AB+","AB-","O+","O-"],
+};
+const allGroups = ["A+","A-","B+","B-","AB+","AB-","O+","O-"];
+
+let currentDonor = null;
+
+async function loadDonorProfile() {
+  const params = new URLSearchParams(window.location.search);
+  const donorId = params.get('id');
+  if (!donorId) {
+    showError('No donor ID specified.');
+    return;
+  }
+  try {
+    const res = await fetch(`/bloodlink/api/donors/${donorId}`, { credentials: 'include' });
+    if (!res.ok) { showError('Donor not found.'); return; }
+    const data = await res.json();
+    if (!data.success || !data.donor) { showError('Donor not found.'); return; }
+    currentDonor = data.donor;
+    populatePage(data.donor);
+  } catch(e) {
+    showError('Could not load donor. Make sure Tomcat is running.');
+  }
+}
+
+function populatePage(d) {
+  const name = d.firstName + ' ' + d.lastName;
+  const donations = d.totalDonations || 0;
+
+  document.getElementById('avatarLetter').textContent = d.firstName[0].toUpperCase();
+  document.getElementById('donorName').textContent = name;
+  document.getElementById('donorMeta').textContent = `📍 ${d.city || '—'}, ${d.state || '—'}   ·   🎂 ${d.age || '—'} years old`;
+  document.getElementById('availTag').textContent = d.available ? '✅ Available to Donate' : '⏸ Currently Unavailable';
+  document.getElementById('donationsTag').textContent = `💉 ${donations} Donation${donations !== 1 ? 's' : ''}`;
+  document.getElementById('bloodBig').textContent = d.bloodGroup || '—';
+  document.getElementById('statDonations').textContent = donations;
+  document.getElementById('statLives').textContent = donations * 3;
+
+  if (d.createdAt) {
+    const months = Math.floor((Date.now() - new Date(d.createdAt)) / (1000 * 60 * 60 * 24 * 30));
+    document.getElementById('statSince').textContent = months >= 12 ? Math.floor(months/12) + 'yr' : months + 'mo';
+  }
+
+  document.getElementById('infoName').textContent = name;
+  document.getElementById('infoBlood').textContent = d.bloodGroup || '—';
+  document.getElementById('infoAge').textContent = (d.age || '—') + ' years';
+  document.getElementById('infoGender').textContent = d.gender || '—';
+  document.getElementById('infoCity').textContent = d.city || '—';
+  document.getElementById('infoState').textContent = d.state || '—';
+  document.getElementById('infoAvail').textContent = d.available ? '✅ Available' : '⏸ Unavailable';
+
+  if (d.lastDonation) {
+    const last = new Date(d.lastDonation);
+    const next = new Date(last); next.setMonth(next.getMonth() + 3);
+    const fmt = { day: 'numeric', month: 'short', year: 'numeric' };
+    document.getElementById('infoLastDon').textContent = last.toLocaleDateString('en-IN', fmt);
+    document.getElementById('infoNextDon').textContent = next.toLocaleDateString('en-IN', fmt);
+  } else {
+    document.getElementById('infoLastDon').textContent = '—';
+    document.getElementById('infoNextDon').textContent = '—';
+  }
+
+  document.title = `BloodLink — ${name}`;
+
+  // Compatibility grid
+  const blood = (d.bloodGroup || '').replace('−', '-');
+  const canDonateTo = compatibility[blood] || [];
+  document.getElementById('compatGrid').innerHTML = allGroups.map(g =>
+    `<div class="compat-item ${canDonateTo.includes(g) ? 'compat-yes' : 'compat-no'}">${g} ${canDonateTo.includes(g) ? '✓' : ''}</div>`
+  ).join('');
+
+  // Donation history
+  if (d.donationHistory && d.donationHistory.length) {
+    document.getElementById('historyList').innerHTML = d.donationHistory.map(h =>
+      `<div class="history-item"><div class="h-dot">💉</div><div class="h-text"><strong>${h.hospital || 'Unknown Hospital'}</strong><span>${new Date(h.date).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}</span></div></div>`
+    ).join('');
+  } else {
+    document.getElementById('historyList').innerHTML = '<p style="color:var(--text-light);font-size:0.88rem">No donation history available.</p>';
+  }
+}
+
+function showError(msg) {
+  document.getElementById('donorName').textContent = 'Not Found';
+  document.getElementById('donorMeta').textContent = msg;
+}
+
+function sendRequest() {
+  if (!currentDonor) return;
+  const name = currentDonor.firstName + ' ' + currentDonor.lastName;
+  showToast(`📨 Request sent to ${name}! They will respond shortly.`);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+loadDonorProfile();
+</script>
+</body>
+</html>

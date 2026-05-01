@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BloodLink — My Profile</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    .profile-layout { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; padding: 3rem 0; }
+    
+    /* PROFILE CARD */
+    .profile-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 24px; overflow: hidden;
+      position: sticky; top: 88px; height: fit-content;
+    }
+    .profile-banner {
+      background: linear-gradient(135deg, var(--red), #8B0000);
+      height: 100px; position: relative;
+    }
+    .profile-avatar-wrap { padding: 0 1.8rem; position: relative; }
+    .profile-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--red-light); border: 4px solid var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 700; color: var(--red);
+      margin-top: -40px; position: relative;
+    }
+    .profile-body { padding: 1rem 1.8rem 1.8rem; }
+    .profile-name { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .profile-email { font-size: 0.85rem; color: var(--text-light); margin-bottom: 1rem; }
+    .profile-blood {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--red); color: var(--white);
+      font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 700;
+      width: 56px; height: 56px; border-radius: 50%;
+      margin-bottom: 1.2rem;
+    }
+    .profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.2rem; }
+    .pstat {
+      background: var(--bg2); border-radius: 12px; padding: 0.9rem;
+      text-align: center;
+    }
+    .pstat-num { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 700; color: var(--red); }
+    .pstat-label { font-size: 0.72rem; color: var(--text-light); font-weight: 500; }
+    .avail-toggle-btn {
+      width: 100%; padding: 0.75rem; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 700; cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: all 0.2s; margin-bottom: 0.6rem;
+    }
+    .avail-on { background: #DCFCE7; color: #15803D; border: 1.5px solid #86EFAC; }
+    .avail-off { background: #FEF3C7; color: #B45309; border: 1.5px solid #FCD34D; }
+    .edit-profile-btn {
+      width: 100%; background: none; border: 1.5px solid var(--border);
+      color: var(--text-mid); padding: 0.7rem; border-radius: 10px;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s;
+    }
+    .edit-profile-btn:hover { border-color: var(--red); color: var(--red); }
+
+    /* MAIN CONTENT */
+    .profile-tabs { display: flex; gap: 0.3rem; border-bottom: 1px solid var(--border); margin-bottom: 1.8rem; }
+    .ptab {
+      padding: 0.75rem 1.2rem; font-size: 0.9rem; font-weight: 600;
+      color: var(--text-light); cursor: pointer; border-bottom: 2px solid transparent;
+      transition: all 0.2s; border: none; background: none;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .ptab.active { color: var(--red); border-bottom-color: var(--red); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeUp 0.3s ease; }
+
+    /* HISTORY TABLE */
+    .history-table { width: 100%; border-collapse: collapse; }
+    .history-table th {
+      font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px; color: var(--text-light);
+      padding: 0.6rem 1rem; text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .history-table td { padding: 0.9rem 1rem; font-size: 0.9rem; border-bottom: 1px solid var(--border); }
+    .history-table tr:last-child td { border-bottom: none; }
+    .history-table tr:hover td { background: var(--bg2); }
+
+    /* REQUESTS */
+    .request-item {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.2rem 1.5rem;
+      margin-bottom: 1rem; display: flex;
+      align-items: center; justify-content: space-between;
+      transition: all 0.2s;
+    }
+    .request-item:hover { box-shadow: 0 4px 20px var(--shadow); }
+    .req-blood { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 700; color: var(--red); min-width: 50px; }
+    .req-details h4 { font-size: 0.95rem; font-weight: 700; }
+    .req-details p { font-size: 0.82rem; color: var(--text-light); margin-top: 0.2rem; }
+    .req-actions { display: flex; gap: 0.5rem; }
+    .btn-accept { background: #DCFCE7; color: #15803D; border: 1px solid #86EFAC; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .btn-decline { background: var(--bg2); color: var(--text-light); border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    /* SETTINGS */
+    .settings-section { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.2rem; }
+    .settings-section h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 1.2rem; color: var(--text); }
+    .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0; border-bottom: 1px solid var(--border); }
+    .setting-row:last-child { border-bottom: none; }
+    .setting-label { font-size: 0.9rem; color: var(--text); }
+    .setting-sub { font-size: 0.78rem; color: var(--text-light); }
+    .toggle { position: relative; width: 44px; height: 24px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; inset: 0; background: #CBD5E1; border-radius: 50px; cursor: pointer; transition: 0.3s; }
+    .slider::before { content: ''; position: absolute; width: 18px; height: 18px; background: white; border-radius: 50%; left: 3px; top: 3px; transition: 0.3s; }
+    .toggle input:checked + .slider { background: var(--red); }
+    .toggle input:checked + .slider::before { transform: translateX(20px); }
+
+    @media(max-width:768px) {
+      .profile-layout { grid-template-columns: 1fr; }
+      .profile-card { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">Blood<span>Link</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="find-donor.html">Find Donor</a></li>
+    <li><a href="urgent.html">Urgent</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="profile.html" class="btn-ghost">My Profile</a>
+    <a href="#" onclick="doLogout()" class="btn-red">Logout</a>
+  </div>
+</nav>
+
+<section class="section-sm">
+  <div class="container">
+    <div class="profile-layout">
+      <!-- SIDEBAR -->
+      <div class="profile-card">
+        <div class="profile-banner"></div>
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar" id="profileAvatar">R</div>
+        </div>
+        <div class="profile-body">
+          <div class="profile-name" id="profileName">Loading...</div>
+          <div class="profile-email" id="profileEmail">Loading...</div>
+          <div class="profile-blood" id="profileBlood">--</div>
+          <div class="profile-stats">
+            <div class="pstat">
+              <div class="pstat-num">7</div>
+              <div class="pstat-label">Donations</div>
+            </div>
+            <div class="pstat">
+              <div class="pstat-num">21</div>
+              <div class="pstat-label">Lives Saved</div>
+            </div>
+            <div class="pstat">
+              <div class="pstat-num">3</div>
+              <div class="pstat-label">Requests</div>
+            </div>
+            <div class="pstat">
+              <div class="pstat-num">2yr</div>
+              <div class="pstat-label">Member</div>
+            </div>
+          </div>
+          <button class="avail-toggle-btn avail-on" id="availBtn" onclick="toggleAvail()">
+            ✅ Available to Donate
+          </button>
+          <button class="edit-profile-btn" onclick="showToast('Edit mode activated!')">✏️ Edit Profile</button>
+        </div>
+      </div>
+
+      <!-- MAIN -->
+      <div>
+        <div class="profile-tabs">
+          <button class="ptab active" onclick="showTab('overview')">Overview</button>
+          <button class="ptab" onclick="showTab('history')">Donation History</button>
+          <button class="ptab" onclick="showTab('requests')">Requests (3)</button>
+          <button class="ptab" onclick="showTab('settings')">Settings</button>
+        </div>
+
+        <!-- OVERVIEW -->
+        <div class="tab-content active" id="tab-overview">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem">
+            <div class="card">
+              <div style="font-size:0.78rem;color:var(--text-light);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.8rem">Next Eligible Date</div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--red)">Mar 15, 2025</div>
+              <div style="font-size:0.82rem;color:var(--text-light);margin-top:0.3rem">3 months after last donation</div>
+            </div>
+            <div class="card">
+              <div style="font-size:0.78rem;color:var(--text-light);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.8rem">Last Donation</div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--text)">Dec 15, 2024</div>
+              <div style="font-size:0.82rem;color:var(--text-light);margin-top:0.3rem">City General Hospital, Mumbai</div>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:1.2rem">
+            <div style="font-size:0.88rem;font-weight:700;margin-bottom:1rem">Personal Information</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div><div style="font-size:0.75rem;color:var(--text-light);font-weight:600;margin-bottom:0.2rem">FULL NAME</div><div style="font-size:0.92rem;font-weight:600" id="infoName">—</div></div>
+              <div><div style="font-size:0.75rem;color:var(--text-light);font-weight:600;margin-bottom:0.2rem">BLOOD GROUP</div><div style="font-size:0.92rem;font-weight:600" id="infoBlood">—</div></div>
+              <div><div style="font-size:0.75rem;color:var(--text-light);font-weight:600;margin-bottom:0.2rem">AGE</div><div style="font-size:0.92rem;font-weight:600" id="infoAge">—</div></div>
+              <div><div style="font-size:0.75rem;color:var(--text-light);font-weight:600;margin-bottom:0.2rem">CITY</div><div style="font-size:0.92rem;font-weight:600" id="infoCity">—</div></div>
+              <div><div style="font-size:0.75rem;color:var(--text-light);font-weight:600;margin-bottom:0.2rem">PHONE</div><div style="font-size:0.92rem;font-weight:600" id="infoPhone">—</div></div>
+              <div><div style="font-size:0.75rem;color:var(--text-light);font-weight:600;margin-bottom:0.2rem">WEIGHT</div><div style="font-size:0.92rem;font-weight:600" id="infoWeight">—</div></div>
+            </div>
+          </div>
+          <div class="card" style="background:linear-gradient(135deg,var(--red),#8B0000);border:none;color:white;text-align:center;padding:2rem">
+            <div style="font-size:2rem;margin-bottom:0.5rem">🏆</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;margin-bottom:0.3rem">Regular Donor Badge</div>
+            <div style="opacity:0.8;font-size:0.88rem">You've donated 7 times — you're a hero!</div>
+          </div>
+        </div>
+
+        <!-- DONATION HISTORY -->
+        <div class="tab-content" id="tab-history">
+          <div class="card" style="padding:0;overflow:hidden">
+            <table class="history-table">
+              <thead><tr>
+                <th>Date</th><th>Hospital</th><th>City</th><th>Units</th><th>Certificate</th>
+              </tr></thead>
+              <tbody>
+                <tr><td>Dec 15, 2024</td><td>City General Hospital</td><td>Mumbai</td><td>1 unit</td><td><a href="#" style="color:var(--red);font-weight:600;font-size:0.82rem">Download</a></td></tr>
+                <tr><td>Sep 10, 2024</td><td>Apollo Medical Center</td><td>Pune</td><td>1 unit</td><td><a href="#" style="color:var(--red);font-weight:600;font-size:0.82rem">Download</a></td></tr>
+                <tr><td>Jun 05, 2024</td><td>Lilavati Hospital</td><td>Mumbai</td><td>1 unit</td><td><a href="#" style="color:var(--red);font-weight:600;font-size:0.82rem">Download</a></td></tr>
+                <tr><td>Mar 20, 2024</td><td>KEM Hospital</td><td>Mumbai</td><td>1 unit</td><td><a href="#" style="color:var(--red);font-weight:600;font-size:0.82rem">Download</a></td></tr>
+                <tr><td>Nov 12, 2023</td><td>Hinduja Hospital</td><td>Mumbai</td><td>1 unit</td><td><a href="#" style="color:var(--red);font-weight:600;font-size:0.82rem">Download</a></td></tr>
+                <tr><td>Aug 08, 2023</td><td>Breach Candy Hospital</td><td>Mumbai</td><td>1 unit</td><td><a href="#" style="color:var(--red);font-weight:600;font-size:0.82rem">Download</a></td></tr>
+                <tr><td>Apr 22, 2023</td><td>Jaslok Hospital</td><td>Mumbai</td><td>1 unit</td><td><a href="#" style="color:var(--red);font-weight:600;font-size:0.82rem">Download</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- REQUESTS -->
+        <div class="tab-content" id="tab-requests">
+          <div class="request-item">
+            <div style="display:flex;gap:1rem;align-items:center">
+              <div class="req-blood">A+</div>
+              <div class="req-details">
+                <h4>Sunita Kapoor's Family</h4>
+                <p>📍 Kokilaben Hospital, Mumbai · Needed: Today</p>
+              </div>
+            </div>
+            <div class="req-actions">
+              <button class="btn-accept" onclick="showToast('✅ Request accepted!')">Accept</button>
+              <button class="btn-decline" onclick="showToast('Request declined.')">Decline</button>
+            </div>
+          </div>
+          <div class="request-item">
+            <div style="display:flex;gap:1rem;align-items:center">
+              <div class="req-blood">A+</div>
+              <div class="req-details">
+                <h4>Rajesh Kumar</h4>
+                <p>📍 Lilavati Hospital, Mumbai · Needed: This week</p>
+              </div>
+            </div>
+            <div class="req-actions">
+              <button class="btn-accept" onclick="showToast('✅ Request accepted!')">Accept</button>
+              <button class="btn-decline" onclick="showToast('Request declined.')">Decline</button>
+            </div>
+          </div>
+          <div class="request-item" style="opacity:0.6">
+            <div style="display:flex;gap:1rem;align-items:center">
+              <div class="req-blood">A+</div>
+              <div class="req-details">
+                <h4>Meera Desai</h4>
+                <p>📍 KEM Hospital, Mumbai · Completed</p>
+              </div>
+            </div>
+            <span class="tag-available">✅ Completed</span>
+          </div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="tab-content" id="tab-settings">
+          <div class="settings-section">
+            <h3>🔔 Notifications</h3>
+            <div class="setting-row">
+              <div><div class="setting-label">Email Notifications</div><div class="setting-sub">Get alerts via email when requests arrive</div></div>
+              <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">SMS Alerts</div><div class="setting-sub">Receive urgent SMS for critical requests</div></div>
+              <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Nearby Requests Only</div><div class="setting-sub">Only notify for requests within 20km</div></div>
+              <label class="toggle"><input type="checkbox"/><span class="slider"></span></label>
+            </div>
+          </div>
+          <div class="settings-section">
+            <h3>🔒 Privacy</h3>
+            <div class="setting-row">
+              <div><div class="setting-label">Public Profile</div><div class="setting-sub">Show your profile in search results</div></div>
+              <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Show Phone Number</div><div class="setting-sub">Display number only after request accepted</div></div>
+              <label class="toggle"><input type="checkbox"/><span class="slider"></span></label>
+            </div>
+          </div>
+          <div class="settings-section">
+            <h3>🗑️ Account</h3>
+            <div class="setting-row">
+              <div class="setting-label">Change Password</div>
+              <button class="btn-ghost" style="font-size:0.82rem;padding:0.4rem 0.9rem" onclick="showToast('Password change email sent!')">Change</button>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label" style="color:#DC2626">Delete Account</div><div class="setting-sub">Permanently remove your data</div></div>
+              <button style="background:#FEE2E2;color:#DC2626;border:1px solid #FCA5A5;padding:0.4rem 0.9rem;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif" onclick="showToast('Are you sure? This cannot be undone.')">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-logo">Blood<span>Link</span></div>
+  <p style="margin-top:0.5rem;">© 2025 BloodLink. Saving lives every day.</p>
+</footer>
+
+<div class="toast" id="toast"></div>
+<script>
+// Load user from session
+async function loadProfile() {
+  try {
+    const res = await fetch('/bloodlink/api/auth/me', { credentials: 'include' });
+    if (res.status === 401) { location.href = 'login.html'; return; }
+    const data = await res.json();
+    if (!data.success) { location.href = 'login.html'; return; }
+    const u = data.user;
+    const name = u.firstName + ' ' + u.lastName;
+
+    // Update basic info
+    document.getElementById('profileName').textContent = name;
+    document.getElementById('profileEmail').textContent = u.email;
+    document.getElementById('profileAvatar').textContent = u.firstName[0].toUpperCase();
+    document.getElementById('infoName').textContent = name;
+    document.getElementById('infoPhone').textContent = u.phone || '—';
+
+    // Load donor profile
+    try {
+      const res2 = await fetch('/bloodlink/api/donors/me', { credentials: 'include' });
+      if (res2.ok) {
+        const data2 = await res2.json();
+        if (data2.success && data2.donor) {
+          const d = data2.donor;
+          document.getElementById('profileBlood').textContent = d.bloodGroup || '—';
+          document.getElementById('infoBlood').textContent = d.bloodGroup || '—';
+          document.getElementById('infoAge').textContent = (d.age || '—') + ' years';
+          document.getElementById('infoCity').textContent = (d.city || '') + (d.state ? ', ' + d.state : '');
+          document.getElementById('infoWeight').textContent = (d.weight || '—') + ' kg';
+          isAvail = d.available;
+          const btn = document.getElementById('availBtn');
+          if (btn) {
+            btn.textContent = isAvail ? '✅ Available to Donate' : '⏸ Set as Unavailable';
+            btn.className = 'avail-toggle-btn ' + (isAvail ? 'avail-on' : 'avail-off');
+          }
+        }
+      }
+    } catch(e) {}
+  } catch(e) { console.log('Profile load error', e); }
+}
+
+async function doLogout() {
+  await fetch('/bloodlink/api/auth/logout', { method: 'POST', credentials: 'include' });
+  localStorage.removeItem('user');
+  location.href = 'login.html';
+}
+
+loadProfile();
+
+function showTab(tab) {
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+let isAvail = true;
+function toggleAvail() {
+  isAvail = !isAvail;
+  const btn = document.getElementById('availBtn');
+  btn.textContent = isAvail ? '✅ Available to Donate' : '⏸ Set as Unavailable';
+  btn.className = 'avail-toggle-btn ' + (isAvail ? 'avail-on' : 'avail-off');
+  showToast(isAvail ? '✅ You are now available!' :

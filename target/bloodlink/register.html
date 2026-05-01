@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BloodLink — Register as Donor</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    .register-layout {
+      display: grid; grid-template-columns: 1fr 1.4fr;
+      gap: 4rem; align-items: start;
+      padding: 4rem 0;
+    }
+    .register-side h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.4rem; font-weight: 700;
+      line-height: 1.2; margin-bottom: 1rem;
+    }
+    .register-side h2 .accent { color: var(--red); }
+    .register-side p { color: var(--text-light); line-height: 1.8; margin-bottom: 2rem; font-size: 0.95rem; }
+    .benefit-item {
+      display: flex; gap: 1rem; align-items: flex-start;
+      margin-bottom: 1.2rem;
+    }
+    .benefit-icon {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: var(--red-light); display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .benefit-text h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .benefit-text p { font-size: 0.85rem; color: var(--text-light); line-height: 1.5; margin: 0; }
+
+    .eligibility-box {
+      background: var(--red-light); border: 1px solid var(--red-mid);
+      border-radius: 14px; padding: 1.2rem 1.5rem; margin-top: 2rem;
+    }
+    .eligibility-box h4 { color: var(--red); font-size: 0.85rem; font-weight: 700; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .eligibility-box ul { list-style: none; }
+    .eligibility-box li { font-size: 0.85rem; color: var(--text-mid); margin-bottom: 0.3rem; padding-left: 1rem; position: relative; }
+    .eligibility-box li::before { content: '✓'; position: absolute; left: 0; color: var(--red); font-weight: 700; }
+
+    .reg-form-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 24px; padding: 2.5rem;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.07);
+    }
+    .form-section-title {
+      font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--red);
+      padding: 0.6rem 0; border-bottom: 1px solid var(--border);
+      margin-bottom: 1.2rem; margin-top: 1.5rem;
+    }
+    .form-section-title:first-of-type { margin-top: 0; }
+    .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    .blood-select-grid {
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 0.6rem;
+      margin-bottom: 1.1rem;
+    }
+    .blood-opt {
+      border: 1.5px solid var(--border); background: var(--white);
+      border-radius: 10px; padding: 0.7rem 0.5rem;
+      text-align: center; cursor: pointer; transition: all 0.2s;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem; font-weight: 700; color: var(--text);
+    }
+    .blood-opt:hover, .blood-opt.selected {
+      border-color: var(--red); background: var(--red-light); color: var(--red);
+    }
+    .checkbox-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.7rem; cursor: pointer; }
+    .checkbox-row input { width: 16px; height: 16px; accent-color: var(--red); }
+    .checkbox-row span { font-size: 0.88rem; color: var(--text-mid); }
+    .progress-bar {
+      background: var(--bg2); border-radius: 50px; height: 6px;
+      margin-bottom: 2rem; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; background: var(--red); border-radius: 50px;
+      width: 0%; transition: width 0.5s ease;
+    }
+    .progress-label { font-size: 0.78rem; color: var(--text-light); margin-bottom: 0.4rem; }
+    .submit-full {
+      width: 100%; background: var(--red); color: var(--white);
+      border: none; padding: 0.9rem; border-radius: 12px;
+      font-size: 0.95rem; font-weight: 700;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      cursor: pointer; transition: all 0.25s; margin-top: 1rem;
+    }
+    .submit-full:hover { background: #A50D26; box-shadow: 0 6px 20px rgba(200,16,46,0.3); }
+
+    @media(max-width:768px) {
+      .register-layout { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 0; }
+      .form-2col, .form-3col { grid-template-columns: 1fr; }
+      .blood-select-grid { grid-template-columns: repeat(4,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">Blood<span>Link</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="find-donor.html">Find Donor</a></li>
+    <li><a href="urgent.html">Urgent</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-ghost">Login</a>
+    <a href="register.html" class="btn-red">Register</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1>Become a Donor</h1>
+    <p>Register in 2 minutes and start saving lives today</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="register-layout">
+      <!-- LEFT SIDE INFO -->
+      <div class="register-side">
+        <div class="chip" style="margin-bottom:1rem;">Why Donate?</div>
+        <h2>Be Someone's <span class="accent">Reason to Live</span></h2>
+        <p>A single blood donation takes 45 minutes and can save up to 3 lives. Your act of generosity costs nothing but means everything to those in need.</p>
+
+        <div class="benefit-item">
+          <div class="benefit-icon">🛡️</div>
+          <div class="benefit-text">
+            <h4>Control Your Privacy</h4>
+            <p>Your contact info is only shared when you explicitly agree to a donation request.</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon">🔔</div>
+          <div class="benefit-text">
+            <h4>Smart Notifications</h4>
+            <p>Get notified only when someone nearby needs your exact blood group.</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon">📜</div>
+          <div class="benefit-text">
+            <h4>Donation Certificate</h4>
+            <p>Receive a verified digital certificate after each donation for your records.</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon">❤️</div>
+          <div class="benefit-text">
+            <h4>Health Benefits</h4>
+            <p>Regular donation can reduce risk of heart disease and stimulates blood cell production.</p>
+          </div>
+        </div>
+
+        <div class="eligibility-box">
+          <h4>Eligibility Requirements</h4>
+          <ul>
+            <li>Age: 18–65 years</li>
+            <li>Weight: Minimum 50 kg</li>
+            <li>Hemoglobin: ≥ 12.5 g/dL</li>
+            <li>No donation in last 3 months</li>
+            <li>No major illness in last 6 months</li>
+            <li>Not pregnant or breastfeeding</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <div class="reg-form-card fade-up">
+        <div class="progress-label">Form completion</div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+        <div class="form-section-title">👤 Personal Information</div>
+        <div class="form-2col">
+          <div class="form-group">
+            <label class="form-label">First Name *</label>
+            <input type="text" class="form-input" id="firstNameInput" placeholder="Raj" oninput="updateProgress()"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name *</label>
+            <input type="text" class="form-input" id="lastNameInput" placeholder="Sharma" oninput="updateProgress()"/>
+          </div>
+        </div>
+        <div class="form-2col">
+          <div class="form-group">
+            <label class="form-label">Date of Birth *</label>
+            <input type="date" class="form-input" id="dobInput" oninput="updateProgress()"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gender *</label>
+            <select class="form-select" id="genderSelect" onchange="updateProgress()">
+              <option value="">Select</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-2col">
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input type="email" class="form-input" id="emailInput" placeholder="raj@example.com" oninput="updateProgress()"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone *</label>
+            <input type="tel" class="form-input" id="phoneInput" placeholder="+91 98765 43210" oninput="updateProgress()"/>
+          </div>
+        </div>
+
+        <div class="form-section-title">🩸 Blood Information</div>
+        <label class="form-label">Select Your Blood Group *</label>
+        <div class="blood-select-grid">
+          <div class="blood-opt selected" onclick="selectBlood(this)">A+</div>
+          <div class="blood-opt" onclick="selectBlood(this)">A−</div>
+          <div class="blood-opt" onclick="selectBlood(this)">B+</div>
+          <div class="blood-opt" onclick="selectBlood(this)">B−</div>
+          <div class="blood-opt" onclick="selectBlood(this)">AB+</div>
+          <div class="blood-opt" onclick="selectBlood(this)">AB−</div>
+          <div class="blood-opt" onclick="selectBlood(this)">O+</div>
+          <div class="blood-opt" onclick="selectBlood(this)">O−</div>
+        </div>
+        <div class="form-2col">
+          <div class="form-group">
+            <label class="form-label">Last Donation Date</label>
+            <input type="date" class="form-input"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Weight (kg)</label>
+            <input type="number" class="form-input" id="weightInput" placeholder="e.g. 65" oninput="updateProgress()"/>
+          </div>
+        </div>
+
+        <div class="form-section-title">📍 Location</div>
+        <div class="form-3col">
+          <div class="form-group">
+            <label class="form-label">City *</label>
+            <input type="text" class="form-input" id="cityInput" placeholder="Mumbai" oninput="updateProgress()"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">State *</label>
+            <select class="form-select" id="stateSelect" onchange="updateProgress()">
+              <option value="">Select</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Delhi">Delhi</option>
+              <option value="Karnataka">Karnataka</option>
+              <option value="Tamil Nadu">Tamil Nadu</option>
+              <option value="Gujarat">Gujarat</option>
+              <option value="Rajasthan">Rajasthan</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">PIN Code</label>
+            <input type="text" class="form-input" placeholder="400001"/>
+          </div>
+        </div>
+
+        <div class="form-section-title">🔒 Account Password</div>
+        <div class="form-2col">
+          <div class="form-group">
+            <label class="form-label">Password *</label>
+            <input type="password" class="form-input" id="regPassword" placeholder="Min 6 characters" oninput="updateProgress()"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm Password *</label>
+            <input type="password" class="form-input" id="regPassword2" placeholder="Repeat password"/>
+          </div>
+        </div>
+
+        <div class="form-section-title">✅ Consent & Preferences</div>
+        <label class="checkbox-row">
+          <input type="checkbox" checked/>
+          <span>I am willing to donate blood when contacted</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" checked/>
+          <span>Notify me of urgent requests near my location</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox"/>
+          <span>Show my profile publicly in donor search results</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" checked/>
+          <span>I agree to the <a href="#" style="color:var(--red)">Terms of Service</a> and <a href="#" style="color:var(--red)">Privacy Policy</a></span>
+        </label>
+
+        <button class="submit-full" onclick="submitRegister()">🩸 Complete Registration</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-logo">Blood<span>Link</span></div>
+  <p style="margin-top:0.5rem;">© 2025 BloodLink. Saving lives every day.</p>
+</footer>
+
+<div class="toast" id="toast"></div>
+<script>
+let bloodSelected = 'A+';
+function selectBlood(el) {
+  document.querySelectorAll('.blood-opt').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  bloodSelected = el.textContent;
+  updateProgress();
+}
+function updateProgress() {
+  const inputs = document.querySelectorAll('.form-input, .form-select');
+  let filled = 0;
+  inputs.forEach(i => { if (i.value.trim()) filled++; });
+  const pct = Math.min(100, Math.round((filled / inputs.length) * 100));
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+async function submitRegister() {
+  const firstName = document.getElementById('firstNameInput').value.trim();
+  const lastName  = document.getElementById('lastNameInput').value.trim();
+  const dob       = document.getElementById('dobInput').value;
+  const gender    = document.getElementById('genderSelect').value || 'Male';
+  const email     = document.getElementById('emailInput').value.trim();
+  const phone     = document.getElementById('phoneInput').value.trim();
+  const weight    = document.getElementById('weightInput').value;
+  const city      = document.getElementById('cityInput').value.trim();
+  const state     = document.getElementById('stateSelect').value || 'Maharashtra';
+  const password  = document.getElementById('regPassword').value;
+  const password2 = document.getElementById('regPassword2').value;
+
+  if (!firstName || !email || !password) {
+    showToast('⚠️ First Name, Email and Password are required'); return;
+  }
+  if (password.length < 6) { showToast('⚠️ Password must be at least 6 characters'); return; }
+  if (password !== password2) { showToast('⚠️ Passwords do not match'); return; }
+  if (!city) { showToast('⚠️ Please enter your city'); return; }
+
+  let age = 0;
+  if (dob) {
+    const today = new Date(), birth = new Date(dob);
+    age = today.getFullYear() - birth.getFullYear();
+  }
+
+  showToast('⏳ Registering...');
+  try {
+    const res = await fetch('/bloodlink/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        firstName, lastName, email, phone, password,
+        role: 'donor', bloodGroup: bloodSelected,
+        city, state, gender, age,
+        weight: parseFloat(weight) || 0
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('🎉 Registration successful! Please log in.');
+      setTimeout(() => location.href = 'login.html', 1500);
+    } else {
+      showToast('❌ ' + (data.error || data.message || 'Registration failed'));
+    }
+  } catch (e) {
+    showToast('❌ Connection error. Is Tomcat running?');
+  }
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+updateProgress();
+</script>
+</body>
+</html>

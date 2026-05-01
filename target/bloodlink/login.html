@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BloodLink — Login</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    body { background: var(--bg2); }
+    .auth-wrap {
+      min-height: calc(100vh - 68px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 3rem 1.5rem;
+    }
+    .auth-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 24px; padding: 3rem;
+      width: 100%; max-width: 440px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+      animation: fadeUp 0.5s ease;
+    }
+    .auth-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem; font-weight: 700;
+      color: var(--red); text-align: center;
+      margin-bottom: 0.3rem;
+    }
+    .auth-logo span { color: var(--text); }
+    .auth-sub { text-align: center; color: var(--text-light); font-size: 0.9rem; margin-bottom: 2rem; }
+    .tab-row {
+      display: flex; background: var(--bg2);
+      border-radius: 10px; padding: 4px; margin-bottom: 2rem;
+    }
+    .tab {
+      flex: 1; text-align: center; padding: 0.6rem;
+      border-radius: 8px; font-size: 0.9rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; color: var(--text-mid);
+      border: none; background: none; font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .tab.active { background: var(--white); color: var(--red); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .form-panel { display: none; }
+    .form-panel.active { display: block; animation: fadeUp 0.3s ease; }
+    .divider {
+      text-align: center; position: relative;
+      color: var(--text-light); font-size: 0.82rem;
+      margin: 1.2rem 0;
+    }
+    .divider::before, .divider::after {
+      content: ''; position: absolute; top: 50%;
+      width: 40%; height: 1px; background: var(--border);
+    }
+    .divider::before { left: 0; }
+    .divider::after { right: 0; }
+    .social-btn {
+      width: 100%; border: 1.5px solid var(--border);
+      background: var(--white); color: var(--text);
+      padding: 0.75rem; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 600;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      cursor: pointer; display: flex; align-items: center;
+      justify-content: center; gap: 0.6rem;
+      transition: all 0.2s; margin-bottom: 0.7rem;
+    }
+    .social-btn:hover { border-color: var(--red); color: var(--red); }
+    .submit-full {
+      width: 100%; background: var(--red);
+      color: var(--white); border: none;
+      padding: 0.85rem; border-radius: 10px;
+      font-size: 0.95rem; font-weight: 700;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      cursor: pointer; transition: all 0.25s; margin-top: 0.5rem;
+    }
+    .submit-full:hover { background: #A50D26; box-shadow: 0 6px 20px rgba(200,16,46,0.3); }
+    .forgot { text-align: right; margin-top: -0.5rem; margin-bottom: 1rem; }
+    .forgot a { font-size: 0.82rem; color: var(--red); text-decoration: none; font-weight: 500; }
+    .terms { font-size: 0.78rem; color: var(--text-light); text-align: center; margin-top: 1rem; }
+    .terms a { color: var(--red); text-decoration: none; }
+    .role-selector { display: flex; gap: 0.7rem; margin-bottom: 1rem; }
+    .role-btn {
+      flex: 1; border: 1.5px solid var(--border);
+      background: var(--white); border-radius: 10px;
+      padding: 0.8rem; text-align: center; cursor: pointer;
+      transition: all 0.2s; font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .role-btn:hover, .role-btn.selected {
+      border-color: var(--red); background: var(--red-light);
+      color: var(--red);
+    }
+    .role-btn .role-icon { font-size: 1.5rem; display: block; margin-bottom: 0.3rem; }
+    .role-btn span { font-size: 0.82rem; font-weight: 600; }
+    .form-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">Blood<span>Link</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="find-donor.html">Find Donor</a></li>
+    <li><a href="urgent.html">Urgent</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-ghost">Login</a>
+    <a href="register.html" class="btn-red">Register</a>
+  </div>
+</nav>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">Blood<span>Link</span></div>
+    <div class="auth-sub">Welcome back — sign in to your account</div>
+
+    <div class="tab-row">
+      <button class="tab active" onclick="switchTab('login')">Sign In</button>
+      <button class="tab" onclick="switchTab('signup')">Create Account</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div class="form-panel active" id="loginPanel">
+      <button class="social-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+
+      <div class="divider">or sign in with email</div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-input" id="loginEmail" placeholder="you@example.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="loginPass" placeholder="••••••••"/>
+      </div>
+      <div class="forgot"><a href="#">Forgot password?</a></div>
+      <button class="submit-full" onclick="doLogin()">Sign In →</button>
+      <p class="terms">Don't have an account? <a href="#" onclick="switchTab('signup')">Create one</a></p>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div class="form-panel" id="signupPanel">
+      <div class="form-group">
+        <label class="form-label">I am a...</label>
+        <div class="role-selector">
+          <div class="role-btn selected" id="role-donor" onclick="selectRole('donor')">
+            <span class="role-icon">🩸</span>
+            <span>Donor</span>
+          </div>
+          <div class="role-btn" id="role-seeker" onclick="selectRole('seeker')">
+            <span class="role-icon">🏥</span>
+            <span>Seeker / Family</span>
+          </div>
+          <div class="role-btn" id="role-hospital" onclick="selectRole('hospital')">
+            <span class="role-icon">🏨</span>
+            <span>Hospital</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-row2">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" class="form-input" placeholder="Raj"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" class="form-input" placeholder="Sharma"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-input" placeholder="you@example.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" class="form-input" placeholder="+91 98765 43210"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" placeholder="Min 8 characters"/>
+      </div>
+      <button class="submit-full" onclick="doSignup()">Create Account →</button>
+      <p class="terms">By registering you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a></p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='signup'&&i===1));
+  });
+  document.getElementById('loginPanel').classList.toggle('active', tab==='login');
+  document.getElementById('signupPanel').classList.toggle('active', tab==='signup');
+}
+let selectedRole = 'donor';
+function selectRole(role) {
+  selectedRole = role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('role-'+role).classList.add('selected');
+}
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPass').value;
+  if (!email || !password) { showToast('⚠️ Please enter email and password'); return; }
+  showToast('⏳ Logging in...');
+  try {
+    const res = await fetch('/bloodlink/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (data.success) {
+      localStorage.setItem('user', JSON.stringify(data.user));
+      showToast('✅ Login successful! Redirecting...');
+      setTimeout(() => {
+        location.href = data.user.role === 'admin' ? 'admin.html' : 'profile.html';
+      }, 1000);
+    } else {
+      showToast('❌ ' + (data.message || 'Invalid email or password'));
+    }
+  } catch (e) {
+    showToast('❌ Connection error. Is Tomcat running?');
+  }
+}
+async function doSignup() {
+  const firstName = document.querySelector('#signupPanel .form-row2 input:nth-child(1)') 
+    || document.querySelectorAll('#signupPanel .form-input')[0];
+  const inputs = document.querySelectorAll('#signupPanel .form-input');
+  const firstNameVal = inputs[0].value.trim();
+  const lastNameVal = inputs[1].value.trim();
+  const emailVal = inputs[2].value.trim();
+  const phoneVal = inputs[3].value.trim();
+  const passVal = inputs[4].value;
+  if (!firstNameVal || !emailVal || !passVal) {
+    showToast('⚠️ Please fill in all required fields'); return;
+  }
+  if (passVal.length < 6) { showToast('⚠️ Password must be at least 6 characters'); return; }
+  showToast('⏳ Creating account...');
+  try {
+    const res = await fetch('/bloodlink/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        firstName: firstNameVal,
+        lastName: lastNameVal,
+        email: emailVal,
+        phone: phoneVal,
+        password: passVal,
+        role: selectedRole
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('🎉 Account created! Please log in.');
+      setTimeout(() => switchTab('login'), 1500);
+    } else {
+      showToast('❌ ' + (data.message || 'Registration failed'));
+    }
+  } catch (e) {
+    showToast('❌ Connection error. Is Tomcat running?');
+  }
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>

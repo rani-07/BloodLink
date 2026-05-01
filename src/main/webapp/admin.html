@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BloodLink — Admin Dashboard</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    body { background: var(--bg2); }
+    .admin-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 68px); }
+
+    /* SIDEBAR */
+    .admin-sidebar {
+      background: var(--dark); color: var(--white);
+      padding: 1.5rem; position: sticky; top: 68px;
+      height: calc(100vh - 68px); overflow-y: auto;
+    }
+    .sidebar-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem; font-weight: 700; color: var(--red);
+      margin-bottom: 0.3rem;
+    }
+    .sidebar-role { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-bottom: 2rem; }
+    .sidebar-section { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.3); font-weight: 700; margin-bottom: 0.5rem; margin-top: 1.5rem; }
+    .sidebar-link {
+      display: flex; align-items: center; gap: 0.7rem;
+      padding: 0.65rem 0.9rem; border-radius: 10px;
+      color: rgba(255,255,255,0.6); font-size: 0.88rem; font-weight: 500;
+      cursor: pointer; transition: all 0.2s; margin-bottom: 0.2rem;
+      border: none; background: none; width: 100%;
+      font-family: 'Plus Jakarta Sans', sans-serif; text-align: left;
+    }
+    .sidebar-link:hover { background: rgba(255,255,255,0.08); color: var(--white); }
+    .sidebar-link.active { background: rgba(200,16,46,0.2); color: var(--red); }
+    .sidebar-badge {
+      margin-left: auto; background: var(--red); color: var(--white);
+      font-size: 0.68rem; font-weight: 700; border-radius: 50px;
+      padding: 0.1rem 0.45rem;
+    }
+
+    /* MAIN CONTENT */
+    .admin-main { padding: 2rem; overflow-y: auto; }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    .admin-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; }
+    .admin-header p { font-size: 0.85rem; color: var(--text-light); }
+
+    /* STAT CARDS */
+    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.2rem; margin-bottom: 2rem; }
+    .stat-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.5rem; position: relative; overflow: hidden;
+    }
+    .stat-card::after {
+      content: ''; position: absolute; right: -10px; top: -10px;
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--red-light); opacity: 0.5;
+    }
+    .stat-icon { font-size: 1.5rem; margin-bottom: 0.8rem; }
+    .stat-card-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; font-weight: 700; color: var(--text);
+      line-height: 1; margin-bottom: 0.3rem;
+    }
+    .stat-card-label { font-size: 0.82rem; color: var(--text-light); font-weight: 500; }
+    .stat-change { font-size: 0.75rem; font-weight: 700; margin-top: 0.5rem; }
+    .up { color: var(--success); }
+    .down { color: var(--red); }
+
+    /* GRID CONTENT */
+    .content-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .panel {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.5rem;
+    }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
+    .panel-header h3 { font-size: 0.95rem; font-weight: 700; }
+    .view-all { font-size: 0.8rem; color: var(--red); text-decoration: none; font-weight: 600; }
+
+    /* TABLE */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px; color: var(--text-light);
+      padding: 0.5rem 0.8rem; text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table td { padding: 0.75rem 0.8rem; font-size: 0.85rem; border-bottom: 1px solid var(--border); }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: var(--bg2); }
+    .status-pill {
+      padding: 0.2rem 0.6rem; border-radius: 50px;
+      font-size: 0.72rem; font-weight: 700;
+    }
+    .s-active { background: #DCFCE7; color: #15803D; }
+    .s-pending { background: #FEF3C7; color: #B45309; }
+    .s-inactive { background: #F1F5F9; color: #64748B; }
+
+    /* BLOOD CHART */
+    .blood-chart { display: flex; flex-direction: column; gap: 0.8rem; }
+    .bc-row { display: flex; align-items: center; gap: 0.8rem; }
+    .bc-label { min-width: 36px; font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; font-weight: 700; color: var(--red); }
+    .bc-bar-wrap { flex: 1; background: var(--bg2); border-radius: 50px; height: 10px; overflow: hidden; }
+    .bc-bar { height: 100%; background: var(--red); border-radius: 50px; transition: width 1s ease; }
+    .bc-count { min-width: 40px; font-size: 0.78rem; color: var(--text-light); text-align: right; font-weight: 600; }
+
+    /* URGENT TABLE */
+    .urgent-row { display: flex; gap: 0.8rem; align-items: center; padding: 0.7rem 0; border-bottom: 1px solid var(--border); }
+    .urgent-row:last-child { border-bottom: none; }
+    .ur-blood {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--red); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif; font-size: 0.85rem; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .ur-text { flex: 1; }
+    .ur-text strong { font-size: 0.85rem; display: block; }
+    .ur-text span { font-size: 0.75rem; color: var(--text-light); }
+    .ur-action { background: var(--red-light); color: var(--red); border: 1px solid var(--red-mid); border-radius: 7px; padding: 0.3rem 0.7rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    /* TABS */
+    .admin-tabs { display: none; }
+    .admin-tabs.visible { display: block; }
+
+    /* ACTION BTNS */
+    .action-btn {
+      background: none; border: 1px solid var(--border);
+      color: var(--text-mid); padding: 0.3rem 0.6rem;
+      border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: all 0.2s; margin-left: 0.3rem;
+    }
+    .action-btn:hover { border-color: var(--red); color: var(--red); }
+    .action-btn.del:hover { border-color: #DC2626; color: #DC2626; }
+
+    @media(max-width:768px) {
+      .admin-layout { grid-template-columns: 1fr; }
+      .admin-sidebar { display: none; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .content-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">Blood<span>Link</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">← Back to Site</a></li>
+  </ul>
+  <div class="nav-actions">
+    <span style="font-size:0.85rem;color:var(--text-light)">Admin: Aryan Kapoor</span>
+    <a href="login.html" class="btn-ghost">Logout</a>
+  </div>
+</nav>
+
+<div class="admin-layout">
+  <!-- SIDEBAR -->
+  <div class="admin-sidebar">
+    <div class="sidebar-logo">BloodLink</div>
+    <div class="sidebar-role">Admin Panel</div>
+
+    <div class="sidebar-section">Overview</div>
+    <button class="sidebar-link active" onclick="showSection('dashboard',this)">📊 Dashboard</button>
+
+    <div class="sidebar-section">Management</div>
+    <button class="sidebar-link" onclick="showSection('donors',this)">🩸 Donors <span class="sidebar-badge">12,410</span></button>
+    <button class="sidebar-link" onclick="showSection('requests',this)">🚨 Requests <span class="sidebar-badge">18</span></button>
+    <button class="sidebar-link" onclick="showSection('hospitals',this)">🏥 Hospitals</button>
+    <button class="sidebar-link" onclick="showSection('users',this)">👥 Users</button>
+
+    <div class="sidebar-section">Analytics</div>
+    <button class="sidebar-link" onclick="showToast('Reports section coming soon!')">📈 Reports</button>
+    <button class="sidebar-link" onclick="showToast('Export feature coming soon!')">📥 Export Data</button>
+
+    <div class="sidebar-section">Settings</div>
+    <button class="sidebar-link" onclick="showToast('Settings panel coming soon!')">⚙️ Settings</button>
+    <button class="sidebar-link" onclick="showToast('Notification config coming soon!')">🔔 Notifications</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+
+    <!-- DASHBOARD SECTION -->
+    <div id="section-dashboard">
+      <div class="admin-header">
+        <div>
+          <h1>Dashboard Overview</h1>
+          <p>Saturday, January 28, 2025 · Last updated: 2 mins ago</p>
+        </div>
+        <button class="btn-red" onclick="showToast('Data refreshed!')">🔄 Refresh</button>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card fade-up">
+          <div class="stat-icon">🩸</div>
+          <div class="stat-card-num">12,410</div>
+          <div class="stat-card-label">Total Donors</div>
+          <div class="stat-change up">↑ +124 this week</div>
+        </div>
+        <div class="stat-card fade-up" style="animation-delay:0.08s">
+          <div class="stat-icon">🚨</div>
+          <div class="stat-card-num">18</div>
+          <div class="stat-card-label">Active Requests</div>
+          <div class="stat-change down">↑ 5 critical today</div>
+        </div>
+        <div class="stat-card fade-up" style="animation-delay:0.16s">
+          <div class="stat-icon">✅</div>
+          <div class="stat-card-num">5,248</div>
+          <div class="stat-card-label">Lives Saved</div>
+          <div class="stat-change up">↑ +43 this month</div>
+        </div>
+        <div class="stat-card fade-up" style="animation-delay:0.24s">
+          <div class="stat-icon">🏥</div>
+          <div class="stat-card-num">86</div>
+          <div class="stat-card-label">Partner Hospitals</div>
+          <div class="stat-change up">↑ +3 this month</div>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <!-- RECENT DONORS TABLE -->
+        <div class="panel">
+          <div class="panel-header">
+            <h3>🩸 Recent Donor Registrations</h3>
+            <a href="#" class="view-all" onclick="showSection('donors',null)">View all →</a>
+          </div>
+          <table class="data-table">
+            <thead><tr>
+              <th>Name</th><th>Blood</th><th>City</th><th>Status</th><th>Action</th>
+            </tr></thead>
+            <tbody>
+              <tr><td>Rahul Mehta</td><td><strong style="color:var(--red)">A+</strong></td><td>Mumbai</td><td><span class="status-pill s-active">Active</span></td><td><button class="action-btn" onclick="showToast('Viewing Rahul...')">View</button><button class="action-btn del" onclick="showToast('Confirm delete?')">Del</button></td></tr>
+              <tr><td>Priya Sharma</td><td><strong style="color:var(--red)">O+</strong></td><td>Delhi</td><td><span class="status-pill s-active">Active</span></td><td><button class="action-btn">View</button><button class="action-btn del">Del</button></td></tr>
+              <tr><td>Amit Patel</td><td><strong style="color:var(--red)">B+</strong></td><td>Pune</td><td><span class="status-pill s-pending">Pending</span></td><td><button class="action-btn">View</button><button class="action-btn" onclick="showToast('Approved!')">Approve</button></td></tr>
+              <tr><td>Sneha Nair</td><td><strong style="color:var(--red)">AB−</strong></td><td>Bangalore</td><td><span class="status-pill s-active">Active</span></td><td><button class="action-btn">View</button><button class="action-btn del">Del</button></td></tr>
+              <tr><td>Vikram Singh</td><td><strong style="color:var(--red)">O−</strong></td><td>Mumbai</td><td><span class="status-pill s-inactive">Inactive</span></td><td><button class="action-btn">View</button><button class="action-btn del">Del</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div style="display:flex;flex-direction:column;gap:1.5rem">
+          <!-- BLOOD DISTRIBUTION -->
+          <div class="panel">
+            <div class="panel-header"><h3>🩸 Donors by Blood Group</h3></div>
+            <div class="blood-chart">
+              <div class="bc-row"><div class="bc-label">O+</div><div class="bc-bar-wrap"><div class="bc-bar" style="width:85%"></div></div><div class="bc-count">4,100</div></div>
+              <div class="bc-row"><div class="bc-label">A+</div><div class="bc-bar-wrap"><div class="bc-bar" style="width:70%"></div></div><div class="bc-count">3,204</div></div>
+              <div class="bc-row"><div class="bc-label">B+</div><div class="bc-bar-wrap"><div class="bc-bar" style="width:60%"></div></div><div class="bc-count">2,910</div></div>
+              <div class="bc-row"><div class="bc-label">AB+</div><div class="bc-bar-wrap"><div class="bc-bar" style="width:32%"></div></div><div class="bc-count">1,530</div></div>
+              <div class="bc-row"><div class="bc-label">O−</div><div class="bc-bar-wrap"><div class="bc-bar" style="width:16%"></div></div><div class="bc-count">480</div></div>
+              <div class="bc-row"><div class="bc-label">A−</div><div class="bc-bar-wrap"><div class="bc-bar" style="width:18%"></div></div><div class="bc-count">842</div></div>
+            </div>
+          </div>
+
+          <!-- URGENT REQUESTS -->
+          <div class="panel">
+            <div class="panel-header"><h3>🚨 Pending Requests</h3><a href="#" class="view-all">View all →</a></div>
+            <div>
+              <div class="urgent-row">
+                <div class="ur-blood">O−</div>
+                <div class="ur-text"><strong>Kokilaben Hospital</strong><span>Mumbai · Critical</span></div>
+                <button class="ur-action" onclick="showToast('Notified nearby donors!')">Notify</button>
+              </div>
+              <div class="urgent-row">
+                <div class="ur-blood">AB−</div>
+                <div class="ur-text"><strong>Apollo Hospital</strong><span>Navi Mumbai · Critical</span></div>
+                <button class="ur-action" onclick="showToast('Notified nearby donors!')">Notify</button>
+              </div>
+              <div class="urgent-row">
+                <div class="ur-blood">B−</div>
+                <div class="ur-text"><strong>Sunrise Children's</strong><span>Delhi · Urgent</span></div>
+                <button class="ur-action" onclick="showToast('Notified nearby donors!')">Notify</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DONORS SECTION -->
+    <div id="section-donors" style="display:none">
+      <div class="admin-header">
+        <div><h1>Donor Management</h1><p>View, approve, and manage all registered donors</p></div>
+        <button class="btn-red" onclick="showToast('Export started...')">📥 Export CSV</button>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h3>All Donors (12,410)</h3>
+          <input type="text" class="form-input" style="width:220px;font-size:0.85rem;padding:0.5rem 0.9rem" placeholder="Search donor..."/>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Blood</th><th>City</th><th>Donations</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td>Rahul Mehta</td><td><strong style="color:var(--red)">A+</strong></td><td>Mumbai</td><td>7</td><td><span class="status-pill s-active">Active</span></td><td>Jan 2023</td><td><button class="action-btn">View</button><button class="action-btn del">Delete</button></td></tr>
+            <tr><td>Priya Sharma</td><td><strong style="color:var(--red)">O+</strong></td><td>Mumbai</td><td>3</td><td><span class="status-pill s-active">Active</span></td><td>Mar 2023</td><td><button class="action-btn">View</button><button class="action-btn del">Delete</button></td></tr>
+            <tr><td>Amit Patel</td><td><strong style="color:var(--red)">B+</strong></td><td>Pune</td><td>12</td><td><span class="status-pill s-pending">Pending</span></td><td>Nov 2024</td><td><button class="action-btn">View</button><button class="action-btn" onclick="showToast('Approved!')">Approve</button></td></tr>
+            <tr><td>Sneha Nair</td><td><strong style="color:var(--red)">AB−</strong></td><td>Delhi</td><td>2</td><td><span class="status-pill s-active">Active</span></td><td>Jun 2023</td><td><button class="action-btn">View</button><button class="action-btn del">Delete</button></td></tr>
+            <tr><td>Vikram Singh</td><td><strong style="color:var(--red)">O−</strong></td><td>Mumbai</td><td>5</td><td><span class="status-pill s-inactive">Inactive</span></td><td>Feb 2023</td><td><button class="action-btn">View</button><button class="action-btn del">Delete</button></td></tr>
+            <tr><td>Kavitha Reddy</td><td><strong style="color:var(--red)">A−</strong></td><td>Pune</td><td>9</td><td><span class="status-pill s-active">Active</span></td><td>Apr 2023</td><td><button class="action-btn">View</button><button class="action-btn del">Delete</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- REQUESTS SECTION -->
+    <div id="section-requests" style="display:none">
+      <div class="admin-header">
+        <div><h1>Blood Requests</h1><p>Monitor and manage all active and fulfilled requests</p></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h3>Active Requests (18)</h3></div>
+        <table class="data-table">
+          <thead><tr><th>Blood</th><th>Hospital</th><th>City</th><th>Units</th><th>Urgency</th><th>Posted</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><strong style="color:var(--red)">O−</strong></td><td>Kokilaben Hospital</td><td>Mumbai</td><td>2</td><td><span class="status-pill s-inactive" style="background:#FEE2E2;color:#DC2626">Critical</span></td><td>Today</td><td><button class="action-btn" onclick="showToast('Donors notified!')">Notify</button><button class="action-btn" onclick="showToast('Marked fulfilled!')">Fulfill</button></td></tr>
+            <tr><td><strong style="color:var(--red)">AB−</strong></td><td>Apollo Hospitals</td><td>Navi Mumbai</td><td>1</td><td><span class="status-pill s-inactive" style="background:#FEE2E2;color:#DC2626">Critical</span></td><td>Today</td><td><button class="action-btn" onclick="showToast('Donors notified!')">Notify</button><button class="action-btn">Fulfill</button></td></tr>
+            <tr><td><strong style="color:var(--red)">B−</strong></td><td>Sunrise Children's</td><td>Delhi</td><td>1</td><td><span class="status-pill s-pending">Urgent</span></td><td>Today</td><td><button class="action-btn">Notify</button><button class="action-btn">Fulfill</button></td></tr>
+            <tr><td><strong style="color:var(--red)">A−</strong></td><td>Fortis Hospital</td><td>Pune</td><td>3</td><td><span class="status-pill s-pending">Urgent</span></td><td>Yesterday</td><td><button class="action-btn">Notify</button><button class="action-btn">Fulfill</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- HOSPITALS SECTION -->
+    <div id="section-hospitals" style="display:none">
+      <div class="admin-header">
+        <div><h1>Hospital Partners</h1><p>Manage verified hospital and blood bank partnerships</p></div>
+        <button class="btn-red" onclick="showToast('Add hospital form coming soon!')">+ Add Hospital</button>
+      </div>
+      <div class="panel">
+        <table class="data-table">
+          <thead><tr><th>Hospital</th><th>City</th><th>Contact</th><th>Requests</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td>Kokilaben Hospital</td><td>Mumbai</td><td>+91 22 3099 9999</td><td>24</td><td><span class="status-pill s-active">Verified</span></td><td><button class="action-btn">Edit</button></td></tr>
+            <tr><td>Apollo Hospitals</td><td>Navi Mumbai</td><td>+91 22 6760 3000</td><td>18</td><td><span class="status-pill s-active">Verified</span></td><td><button class="action-btn">Edit</button></td></tr>
+            <tr><td>Fortis Hospital</td><td>Pune</td><td>+91 20 6670 0000</td><td>12</td><td><span class="status-pill s-pending">Pending</span></td><td><button class="action-btn" onclick="showToast('Hospital approved!')">Approve</button></td></tr>
+            <tr><td>Lilavati Hospital</td><td>Mumbai</td><td>+91 22 2675 1000</td><td>31</td><td><span class="status-pill s-active">Verified</span></td><td><button class="action-btn">Edit</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USERS SECTION -->
+    <div id="section-users" style="display:none">
+      <div class="admin-header">
+        <div><h1>User Management</h1><p>All registered users on BloodLink</p></div>
+      </div>
+      <div class="panel">
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td>Rahul Mehta</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9dbc8c1dcc5e9ccc4c8c0c587cac6c4">[email&#160;protected]</a></td><td>Donor</td><td>Jan 2023</td><td><span class="status-pill s-active">Active</span></td><td><button class="action-btn">View</button><button class="action-btn del">Ban</button></td></tr>
+            <tr><td>Sunita Kapoor</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a6d5d3c8cfd2c7e6c3cbc7cfca88c5c9cb">[email&#160;protected]</a></td><td>Seeker</td><td>Mar 2024</td><td><span class="status-pill s-active">Active</span></td><td><button class="action-btn">View</button><button class="action-btn del">Ban</button></td></tr>
+            <tr><td>Dr. Rohan Joshi</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="98eaf7f0f9f6d8f9e8f7f4f4f7b6f1f6">[email&#160;protected]</a></td><td>Hospital</td><td>Feb 2023</td><td><span class="status-pill s-active">Active</span></td><td><button class="action-btn">View</button><button class="action-btn del">Ban</button></td></tr>
+            <tr><td>Meera Gupta</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b9d4dcdccbd8f9dcd4d8d0d597dad6d4">[email&#160;protected]</a></td><td>Donor</td><td>Oct 2024</td><td><span class="status-pill s-pending">Unverified</span></td><td><button class="action-btn" onclick="showToast('User verified!')">Verify</button><button class="action-btn del">Ban</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- end admin-main -->
+</div><!-- end admin-layout -->
+
+<div class="toast" id="toast"></div>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudfla

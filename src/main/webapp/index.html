@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BloodLink — Home</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    /* HERO */
+    .hero {
+      min-height: calc(100vh - 68px);
+      display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center; gap: 4rem;
+      padding: 4rem 0;
+    }
+    .hero-tag { margin-bottom: 1.5rem; }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.8rem, 5vw, 4.2rem);
+      font-weight: 700; line-height: 1.1;
+      color: var(--text); margin-bottom: 1.2rem;
+    }
+    .hero h1 .accent { color: var(--red); }
+    .hero p {
+      font-size: 1.05rem; color: var(--text-light);
+      line-height: 1.8; margin-bottom: 2rem; max-width: 460px;
+    }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem; }
+    .hero-stats {
+      display: flex; gap: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.9rem; font-weight: 700; color: var(--red);
+    }
+    .stat-label { font-size: 0.78rem; color: var(--text-light); font-weight: 500; }
+
+    /* HERO VISUAL */
+    .hero-visual {
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .drop-wrap {
+      position: relative; width: 320px; height: 420px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .circle-bg {
+      width: 320px; height: 320px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--red-light) 0%, var(--red-mid) 100%);
+      position: absolute; animation: pulse 3s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+    .drop-icon {
+      font-size: 9rem; position: relative; z-index: 1;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
+    .badge-float {
+      position: absolute; background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 0.8rem 1.2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 0.85rem; font-weight: 600; color: var(--text);
+      animation: floatBadge 4s ease-in-out infinite;
+    }
+    @keyframes floatBadge { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .badge-float.b1 { top: 10%; left: -10%; animation-delay: 0s; }
+    .badge-float.b2 { bottom: 15%; right: -8%; animation-delay: 1s; }
+    .badge-float.b3 { bottom: 5%; left: 5%; animation-delay: 0.5s; }
+    .badge-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success); }
+    .badge-dot.red { background: var(--red); }
+
+    /* HOW IT WORKS */
+    .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; }
+    .step-card {
+      text-align: center; padding: 2.5rem 1.5rem;
+      background: var(--white); border-radius: 20px;
+      border: 1px solid var(--border);
+      transition: all 0.3s;
+    }
+    .step-card:hover { box-shadow: 0 12px 40px var(--shadow); transform: translateY(-4px); }
+    .step-icon {
+      font-size: 2.5rem; margin-bottom: 1.2rem;
+      width: 72px; height: 72px;
+      background: var(--red-light); border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.2rem;
+    }
+    .step-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.9rem; color: var(--red);
+      font-weight: 700; margin-bottom: 0.5rem;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .step-card h3 {
+      font-size: 1.05rem; font-weight: 700;
+      margin-bottom: 0.6rem; color: var(--text);
+    }
+    .step-card p { font-size: 0.9rem; color: var(--text-light); line-height: 1.6; }
+
+    /* BLOOD TYPES */
+    .blood-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
+    .blood-type-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.5rem; text-align: center;
+      cursor: pointer; transition: all 0.25s;
+    }
+    .blood-type-card:hover { background: var(--red); color: var(--white); transform: scale(1.04); }
+    .blood-type-card:hover .bt-label { color: rgba(255,255,255,0.8); }
+    .bt-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; font-weight: 700; color: var(--red);
+      transition: color 0.25s;
+    }
+    .blood-type-card:hover .bt-name { color: var(--white); }
+    .bt-label { font-size: 0.8rem; color: var(--text-light); font-weight: 500; }
+    .bt-count { font-size: 1.1rem; font-weight: 700; margin-top: 0.3rem; }
+
+    /* CTA */
+    .cta-section {
+      background: linear-gradient(135deg, var(--red), #8B0000);
+      border-radius: 24px; padding: 4rem;
+      text-align: center; color: var(--white);
+    }
+    .cta-section h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;
+    }
+    .cta-section p { opacity: 0.85; margin-bottom: 2rem; font-size: 1rem; }
+    .btn-white {
+      background: var(--white); color: var(--red);
+      border: none; padding: 0.8rem 2rem;
+      border-radius: 10px; font-size: 0.95rem; font-weight: 700;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      cursor: pointer; text-decoration: none;
+      display: inline-block; transition: all 0.2s;
+    }
+    .btn-white:hover { transform: scale(1.04); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+
+    .section-header { text-align: center; margin-bottom: 3rem; }
+    .section-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem; font-weight: 700;
+      color: var(--text); margin-bottom: 0.5rem;
+    }
+    .section-header p { color: var(--text-light); font-size: 0.95rem; }
+
+    @media(max-width: 768px) {
+      .hero { grid-template-columns: 1fr; text-align: center; }
+      .hero-visual { display: none; }
+      .steps { grid-template-columns: 1fr; }
+      .blood-grid { grid-template-columns: repeat(2,1fr); }
+      .cta-section { padding: 2.5rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">Blood<span>Link</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="find-donor.html">Find Donor</a></li>
+    <li><a href="urgent.html">Urgent</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-ghost">Login</a>
+    <a href="register.html" class="btn-red">Register</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section style="background: var(--bg);">
+  <div class="container">
+    <div class="hero">
+      <div class="hero-left fade-up">
+        <div class="hero-tag chip">🩸 Life-Saving Platform</div>
+        <h1>Find a <span class="accent">Blood Donor</span> Near You in Minutes</h1>
+        <p>Connect with verified blood donors in your city. Every second counts — BloodLink bridges the gap between donors and those in need.</p>
+        <div class="hero-btns">
+          <a href="find-donor.html" class="btn-red" style="padding:0.8rem 1.8rem;font-size:0.95rem;">🔍 Find a Donor</a>
+          <a href="register.html" class="btn-ghost" style="padding:0.8rem 1.8rem;font-size:0.95rem;">Become a Donor</a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-num">12,400+</div>
+            <div class="stat-label">Registered Donors</div>
+          </div>
+          <div>
+            <div class="stat-num">5,200+</div>
+            <div class="stat-label">Lives Saved</div>
+          </div>
+          <div>
+            <div class="stat-num">48</div>
+            <div class="stat-label">Cities Active</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual fade-up" style="animation-delay:0.2s">
+        <div class="drop-wrap">
+          <div class="circle-bg"></div>
+          <div class="drop-icon">🩸</div>
+          <div class="badge-float b1"><div class="badge-dot"></div>Rahul M. — O+  Available</div>
+          <div class="badge-float b2"><div class="badge-dot red"></div>Urgent: AB− needed</div>
+          <div class="badge-float b3">🏥 42 hospitals connected</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" style="background:var(--bg2);">
+  <div class="container">
+    <div class="section-header">
+      <div class="chip" style="margin-bottom:1rem;">Simple Process</div>
+      <h2>How BloodLink Works</h2>
+      <p>Three simple steps to save a life</p>
+    </div>
+    <div class="steps">
+      <div class="step-card fade-up">
+        <div class="step-icon">🔍</div>
+        <div class="step-num">Step 01</div>
+        <h3>Search by Location</h3>
+        <p>Enter your blood group and city. Our system instantly finds available donors near you.</p>
+      </div>
+      <div class="step-card fade-up" style="animation-delay:0.1s">
+        <div class="step-icon">📞</div>
+        <div class="step-num">Step 02</div>
+        <h3>Contact the Donor</h3>
+        <p>View donor details and send a request. Donors receive instant notifications on their phone.</p>
+      </div>
+      <div class="step-card fade-up" style="animation-delay:0.2s">
+        <div class="step-icon">💉</div>
+        <div class="step-num">Step 03</div>
+        <h3>Donate & Save Lives</h3>
+        <p>Meet at the hospital or blood bank. One donation can save up to 3 lives.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOOD TYPES -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="chip" style="margin-bottom:1rem;">All Blood Groups</div>
+      <h2>Donors by Blood Type</h2>
+      <p>Click any blood type to search for available donors</p>
+    </div>
+    <div class="blood-grid">
+      <div class="blood-type-card" onclick="location.href='find-donor.html?bg=A+'">
+        <div class="bt-name">A+</div>
+        <div class="bt-count">3,204</div>
+        <div class="bt-label">donors available</div>
+      </div>
+      <div class="blood-type-card" onclick="location.href='find-donor.html?bg=A-'">
+        <div class="bt-name">A−</div>
+        <div class="bt-count">842</div>
+        <div class="bt-label">donors available</div>
+      </div>
+      <div class="blood-type-card" onclick="location.href='find-donor.html?bg=B+'">
+        <div class="bt-name">B+</div>
+        <div class="bt-count">2,910</div>
+        <div class="bt-label">donors available</div>
+      </div>
+      <div class="blood-type-card" onclick="location.href='find-donor.html?bg=B-'">
+        <div class="bt-name">B−</div>
+        <div class="bt-count">620</div>
+        <div class="bt-label">donors available</div>
+      </div>
+      <div class="blood-type-card" onclick="location.href='find-donor.html?bg=AB+'">
+        <div class="bt-name">AB+</div>
+        <div class="bt-count">1,530</div>
+        <div class="bt-label">donors available</div>
+      </div>
+      <div class="blood-type-card" onclick="location.href='find-donor.html?bg=AB-'">
+        <div class="bt-name">AB−</div>
+        <div class="bt-count">310</div>
+        <div class="bt-label">donors available</div>
+      </div>
+      <div class="blood-type-card" onclick="location.href='find-donor.html?bg=O+'">
+        <div class="bt-name">O+</div>
+        <div class="bt-count">4,100</div>
+        <div class="bt-label">donors available</div>
+      </div>
+      <div class="blood-type-card" onclick="location.href='find-donor.html?bg=O-'">
+        <div class="bt-name">O−</div>
+        <div class="bt-count">480</div>
+        <div class="bt-label">donors available</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section-sm">
+  <div class="container">
+    <div class="cta-section">
+      <h2>Your Blood Can Save a Life Today</h2>
+      <p>Join 12,400+ registered donors making a difference every day. It only takes 2 minutes to sign up.</p>
+      <a href="register.html" class="btn-white">Register as a Donor →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-logo">Blood<span>Link</span></div>
+  <p>Connecting donors with those in need, saving lives every day.</p>
+  <p style="margin-top:1rem;font-size:0.78rem;opacity:0.5;">© 2025 BloodLink. All rights reserved.</p>
+</footer>
+
+<div class="toast" id="toast"></div>
+<script>
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>

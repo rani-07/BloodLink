@@ -1,0 +1,209 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --red: #C8102E;
+  --red-light: #F5E6E9;
+  --red-mid: #E8C5CC;
+  --dark: #1C0A0E;
+  --text: #2D1215;
+  --text-mid: #6B3540;
+  --text-light: #9E6570;
+  --bg: #FBF7F5;
+  --bg2: #F4EDE9;
+  --white: #FFFFFF;
+  --border: #E8D5D8;
+  --shadow: rgba(200,16,46,0.12);
+  --success: #16A34A;
+  --warning: #D97706;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── NAVBAR ── */
+.navbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(251,247,245,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 3rem;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 68px;
+}
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.7rem; font-weight: 700;
+  color: var(--red); text-decoration: none;
+  letter-spacing: -0.5px;
+}
+.nav-logo span { color: var(--text); }
+.nav-links { display: flex; gap: 0.3rem; list-style: none; }
+.nav-links a {
+  color: var(--text-mid); text-decoration: none;
+  font-size: 0.88rem; font-weight: 500;
+  padding: 0.5rem 0.9rem; border-radius: 8px;
+  transition: all 0.2s;
+}
+.nav-links a:hover, .nav-links a.active {
+  color: var(--red); background: var(--red-light);
+}
+.nav-actions { display: flex; gap: 0.7rem; align-items: center; }
+.btn-ghost {
+  background: none; border: 1.5px solid var(--border);
+  color: var(--text); padding: 0.5rem 1.1rem;
+  border-radius: 8px; font-size: 0.88rem; font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer; text-decoration: none;
+  transition: all 0.2s; display: inline-block;
+}
+.btn-ghost:hover { border-color: var(--red); color: var(--red); }
+.btn-red {
+  background: var(--red); color: var(--white);
+  border: none; padding: 0.55rem 1.2rem;
+  border-radius: 8px; font-size: 0.88rem; font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer; text-decoration: none;
+  transition: all 0.2s; display: inline-block;
+}
+.btn-red:hover { background: #A50D26; box-shadow: 0 4px 16px var(--shadow); }
+
+/* ── COMMON UTILITIES ── */
+.container { max-width: 1140px; margin: 0 auto; padding: 0 2rem; }
+.section { padding: 5rem 0; }
+.section-sm { padding: 3rem 0; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  background: var(--red-light); color: var(--red);
+  border: 1px solid var(--red-mid);
+  padding: 0.3rem 0.9rem; border-radius: 50px;
+  font-size: 0.75rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.8px;
+}
+
+.tag-available {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  background: #DCFCE7; color: var(--success);
+  border: 1px solid #BBF7D0;
+  padding: 0.25rem 0.7rem; border-radius: 50px;
+  font-size: 0.75rem; font-weight: 600;
+}
+.tag-unavailable {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  background: #FEF3C7; color: var(--warning);
+  border: 1px solid #FDE68A;
+  padding: 0.25rem 0.7rem; border-radius: 50px;
+  font-size: 0.75rem; font-weight: 600;
+}
+
+.blood-pill {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--red); color: var(--white);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem; font-weight: 700;
+  width: 48px; height: 48px; border-radius: 50%;
+}
+
+/* ── FORM ELEMENTS ── */
+.form-label {
+  display: block; font-size: 0.8rem; font-weight: 700;
+  color: var(--text-mid); text-transform: uppercase;
+  letter-spacing: 0.5px; margin-bottom: 0.45rem;
+}
+.form-input, .form-select {
+  width: 100%;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  color: var(--text); padding: 0.75rem 1rem;
+  border-radius: 10px; font-size: 0.95rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+}
+.form-input:focus, .form-select:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(200,16,46,0.1);
+}
+.form-group { margin-bottom: 1.1rem; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 1.8rem;
+  transition: all 0.25s;
+}
+.card:hover {
+  box-shadow: 0 8px 30px var(--shadow);
+  border-color: var(--red-mid);
+  transform: translateY(-2px);
+}
+
+/* ── FOOTER ── */
+.footer {
+  background: var(--dark); color: rgba(255,255,255,0.6);
+  padding: 3rem; text-align: center;
+  font-size: 0.85rem;
+}
+.footer-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem; font-weight: 700;
+  color: var(--red); margin-bottom: 0.5rem;
+}
+.footer-logo span { color: var(--white); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 2rem; right: 2rem;
+  background: var(--text); color: var(--white);
+  border-radius: 12px; padding: 0.9rem 1.4rem;
+  font-size: 0.9rem; font-weight: 500;
+  z-index: 9999; transform: translateX(150%);
+  transition: transform 0.4s ease;
+  max-width: 320px;
+}
+.toast.show { transform: translateX(0); }
+
+/* ── PAGE HEADER ── */
+.page-header {
+  background: linear-gradient(135deg, var(--red) 0%, #8B0000 100%);
+  color: var(--white); padding: 4rem 0 3rem;
+  position: relative; overflow: hidden;
+}
+.page-header::after {
+  content: '';
+  position: absolute; right: -5%; top: -30%;
+  width: 400px; height: 400px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 50%;
+}
+.page-header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.8rem; font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.page-header p { opacity: 0.8; font-size: 1rem; }
+
+/* ── RESPONSIVE ── */
+@media(max-width: 768px) {
+  .navbar { padding: 0 1.2rem; }
+  .nav-links { display: none; }
+  .container { padding: 0 1.2rem; }
+  .section { padding: 3rem 0; }
+  .page-header h1 { font-size: 2rem; }
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.5s ease both; }
