@@ -209,7 +209,7 @@ async function doLogin() {
   if (!email || !password) { showToast('⚠️ Please enter email and password'); return; }
   showToast('⏳ Logging in...');
   try {
-    const res = await fetch('/bloodlink/api/auth/login', {
+    const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -245,7 +245,7 @@ async function doSignup() {
   if (passVal.length < 6) { showToast('⚠️ Password must be at least 6 characters'); return; }
   showToast('⏳ Creating account...');
   try {
-    const res = await fetch('/bloodlink/api/auth/register', {
+    const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

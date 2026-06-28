@@ -287,9 +287,9 @@ let filtered = [];
 async function loadDonors() {
   const bg = document.getElementById('bgFilter').value;
   const city = document.getElementById('cityFilter').value.trim();
-  let url = '/bloodlink/api/donors';
+  let url = '/api/donors';
   if (bg || city) {
-    url = `/bloodlink/api/donors/search?bloodGroup=${encodeURIComponent(bg)}&city=${encodeURIComponent(city)}`;
+    url = `/api/donors/search?bloodGroup=${encodeURIComponent(bg)}&city=${encodeURIComponent(city)}`;
   }
   try {
     const res = await fetch(url, { credentials: 'include' });

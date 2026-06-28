@@ -10,9 +10,9 @@ import java.sql.SQLException;
  */
 public class DBConnection {
 
-    private static final String DB_URL = "jdbc:mysql://bloodlink-db-raniaghav07-6151.l.aivencloud.com:24588/defaultdb?sslMode=REQUIRED";
-    private static final String DB_USER = "avnadmin";
-    private static final String DB_PASS = "AVNS_Bj76WQ8KMI1buo57mb6";
+    private static final String DB_URL  = System.getenv("DB_URL");
+    private static final String DB_USER = System.getenv("DB_USER");
+    private static final String DB_PASS = System.getenv("DB_PASS");
 
 
     static {

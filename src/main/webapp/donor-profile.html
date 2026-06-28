@@ -320,7 +320,7 @@ async function loadDonorProfile() {
     return;
   }
   try {
-    const res = await fetch(`/bloodlink/api/donors/${donorId}`, { credentials: 'include' });
+    const res = await fetch(`/api/donors/${donorId}`, { credentials: 'include' });
     if (!res.ok) { showError('Donor not found.'); return; }
     const data = await res.json();
     if (!data.success || !data.donor) { showError('Donor not found.'); return; }

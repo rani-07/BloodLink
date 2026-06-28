@@ -344,7 +344,7 @@ async function submitRegister() {
 
   showToast('⏳ Registering...');
   try {
-    const res = await fetch('/bloodlink/api/auth/register', {
+    const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

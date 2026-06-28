@@ -275,7 +275,7 @@ async function loadProfile() {
   // 1. Always fetch fresh user from API (session-based)
   let u = null;
   try {
-    const res = await fetch('/bloodlink/api/auth/me', { credentials: 'include' });
+    const res = await fetch('/api/auth/me', { credentials: 'include' });
     if (res.status === 401) { location.href = 'login.html'; return; }
     const data = await res.json();
     if (data.success && data.user) {
@@ -309,7 +309,7 @@ async function loadProfile() {
 
   // 3. Fetch donor profile from API
   try {
-    const res2 = await fetch('/bloodlink/api/donors/me', { credentials: 'include' });
+    const res2 = await fetch('/api/donors/me', { credentials: 'include' });
     if (res2.ok) {
       const data2 = await res2.json();
       if (data2.success && data2.donor) {
@@ -367,7 +367,7 @@ function applyDonorData(d) {
 }
 
 async function doLogout() {
-  await fetch('/bloodlink/api/auth/logout', { method: 'POST', credentials: 'include' });
+  await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
   localStorage.removeItem('user');
   localStorage.removeItem('donor');
   localStorage.removeItem('loggedIn');
