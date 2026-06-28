@@ -10,9 +10,10 @@ import java.sql.SQLException;
  */
 public class DBConnection {
 
-    private static final String DB_URL  = "jdbc:mysql://localhost:3306/bloodlink?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
-    private static final String DB_USER = "root";       // change to your MySQL username
-    private static final String DB_PASS = "rda@07092005";   // change to your MySQL password
+       private static final String DB_URL = "jdbc:mysql://://aivencloud.com";
+    private static final String DB_USER = "avnadmin";
+    private static final String DB_PASS = "AVNS_Bj76WQ8KMI1buo57mb6";
+
 
     static {
         try {

@@ -84,8 +84,7 @@
       transition: all 0.2s; font-family: 'Plus Jakarta Sans', sans-serif;
     }
     .role-btn:hover, .role-btn.selected {
-      border-color: var(--red); background: var(--red-light);
-      color: var(--red);
+      border-color: var(--red); background: var(--red-light); color: var(--red);
     }
     .role-btn .role-icon { font-size: 1.5rem; display: block; margin-bottom: 0.3rem; }
     .role-btn span { font-size: 0.82rem; font-weight: 600; }
@@ -196,12 +195,14 @@ function switchTab(tab) {
   document.getElementById('loginPanel').classList.toggle('active', tab==='login');
   document.getElementById('signupPanel').classList.toggle('active', tab==='signup');
 }
+
 let selectedRole = 'donor';
 function selectRole(role) {
   selectedRole = role;
   document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('selected'));
   document.getElementById('role-'+role).classList.add('selected');
 }
+
 async function doLogin() {
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPass').value;
@@ -217,6 +218,8 @@ async function doLogin() {
     const data = await res.json();
     if (data.success) {
       localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('loggedIn', 'true');
+      localStorage.removeItem('donor'); // clear stale donor cache
       showToast('✅ Login successful! Redirecting...');
       setTimeout(() => {
         location.href = data.user.role === 'admin' ? 'admin.html' : 'profile.html';
@@ -228,9 +231,8 @@ async function doLogin() {
     showToast('❌ Connection error. Is Tomcat running?');
   }
 }
+
 async function doSignup() {
-  const firstName = document.querySelector('#signupPanel .form-row2 input:nth-child(1)') 
-    || document.querySelectorAll('#signupPanel .form-input')[0];
   const inputs = document.querySelectorAll('#signupPanel .form-input');
   const firstNameVal = inputs[0].value.trim();
   const lastNameVal = inputs[1].value.trim();
@@ -261,12 +263,13 @@ async function doSignup() {
       showToast('🎉 Account created! Please log in.');
       setTimeout(() => switchTab('login'), 1500);
     } else {
-      showToast('❌ ' + (data.message || 'Registration failed'));
+      showToast('❌ ' + (data.error || data.message || 'Registration failed'));
     }
   } catch (e) {
     showToast('❌ Connection error. Is Tomcat running?');
   }
 }
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
@@ -275,3 +278,8 @@ function showToast(msg) {
 </script>
 </body>
 </html>
+
+
+
+
+

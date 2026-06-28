@@ -298,76 +298,113 @@
 
 <div class="toast" id="toast"></div>
 <script>
-// All donor data (same as find-donor.html)
-const allDonors = [
-  { id:0, name:"Rahul Mehta",   blood:"A+",  city:"Mumbai",    state:"Maharashtra", age:28, donations:7,  available:true,  gender:"Male",   lastDon:"Dec 15, 2024", nextDon:"Mar 15, 2025", since:"2yr" },
-  { id:1, name:"Priya Sharma",  blood:"O+",  city:"Mumbai",    state:"Maharashtra", age:24, donations:3,  available:true,  gender:"Female", lastDon:"Nov 20, 2024", nextDon:"Feb 20, 2025", since:"1yr" },
-  { id:2, name:"Amit Patel",    blood:"B+",  city:"Pune",      state:"Maharashtra", age:32, donations:12, available:true,  gender:"Male",   lastDon:"Dec 01, 2024", nextDon:"Mar 01, 2025", since:"3yr" },
-  { id:3, name:"Sneha Nair",    blood:"AB−", city:"Delhi",     state:"Delhi",       age:27, donations:2,  available:true,  gender:"Female", lastDon:"Oct 10, 2024", nextDon:"Jan 10, 2025", since:"8mo" },
-  { id:4, name:"Vikram Singh",  blood:"O−",  city:"Mumbai",    state:"Maharashtra", age:35, donations:5,  available:false, gender:"Male",   lastDon:"Dec 20, 2024", nextDon:"Mar 20, 2025", since:"2yr" },
-  { id:5, name:"Kavitha Reddy", blood:"A−",  city:"Pune",      state:"Maharashtra", age:29, donations:9,  available:true,  gender:"Female", lastDon:"Nov 05, 2024", nextDon:"Feb 05, 2025", since:"2yr" },
-  { id:6, name:"Rohan Das",     blood:"B−",  city:"Bangalore", state:"Karnataka",   age:26, donations:1,  available:true,  gender:"Male",   lastDon:"Sep 15, 2024", nextDon:"Dec 15, 2024", since:"6mo" },
-  { id:7, name:"Meena Iyer",    blood:"O+",  city:"Chennai",   state:"Tamil Nadu",  age:31, donations:6,  available:true,  gender:"Female", lastDon:"Nov 28, 2024", nextDon:"Feb 28, 2025", since:"1yr" },
-  { id:8, name:"Arjun Gupta",   blood:"AB+", city:"Delhi",     state:"Delhi",       age:22, donations:0,  available:true,  gender:"Male",   lastDon:"—",            nextDon:"—",            since:"3mo" },
-  { id:9, name:"Divya Joshi",   blood:"A+",  city:"Mumbai",    state:"Maharashtra", age:33, donations:14, available:false, gender:"Female", lastDon:"Dec 22, 2024", nextDon:"Mar 22, 2025", since:"4yr" },
-  { id:10,name:"Karan Shah",    blood:"B+",  city:"Surat",     state:"Gujarat",     age:25, donations:3,  available:true,  gender:"Male",   lastDon:"Oct 30, 2024", nextDon:"Jan 30, 2025", since:"1yr" },
-  { id:11,name:"Lakshmi Pillai",blood:"O−",  city:"Pune",      state:"Maharashtra", age:37, donations:8,  available:true,  gender:"Female", lastDon:"Nov 15, 2024", nextDon:"Feb 15, 2025", since:"3yr" },
-];
-
-// Blood compatibility map
 const compatibility = {
   "A+":  ["A+","AB+"],
-  "A−":  ["A+","A−","AB+","AB−"],
+  "A-":  ["A+","A-","AB+","AB-"],
   "B+":  ["B+","AB+"],
-  "B−":  ["B+","B−","AB+","AB−"],
+  "B-":  ["B+","B-","AB+","AB-"],
   "AB+": ["AB+"],
-  "AB−": ["AB+","AB−"],
+  "AB-": ["AB+","AB-"],
   "O+":  ["A+","B+","AB+","O+"],
-  "O−":  ["A+","A−","B+","B−","AB+","AB−","O+","O−"],
+  "O-":  ["A+","A-","B+","B-","AB+","AB-","O+","O-"],
 };
-const allGroups = ["A+","A−","B+","B−","AB+","AB−","O+","O−"];
+const allGroups = ["A+","A-","B+","B-","AB+","AB-","O+","O-"];
 
-// Read donor id from URL
-const params = new URLSearchParams(window.location.search);
-const donorId = parseInt(params.get('id') || '0');
-const d = allDonors[donorId] || allDonors[0];
+let currentDonor = null;
 
-// Populate page
-document.getElementById('avatarLetter').textContent = d.name[0];
-document.getElementById('donorName').textContent = d.name;
-document.getElementById('donorMeta').textContent = `📍 ${d.city}, ${d.state}   ·   🎂 ${d.age} years old`;
-document.getElementById('availTag').textContent = d.available ? '✅ Available to Donate' : '⏸ Currently Unavailable';
-document.getElementById('donationsTag').textContent = `💉 ${d.donations} Donation${d.donations!==1?'s':''}`;
-document.getElementById('bloodBig').textContent = d.blood;
-document.getElementById('statDonations').textContent = d.donations;
-document.getElementById('statLives').textContent = d.donations * 3;
-document.getElementById('statSince').textContent = d.since;
-document.getElementById('infoName').textContent = d.name;
-document.getElementById('infoBlood').textContent = d.blood;
-document.getElementById('infoAge').textContent = d.age + ' years';
-document.getElementById('infoGender').textContent = d.gender;
-document.getElementById('infoCity').textContent = d.city;
-document.getElementById('infoState').textContent = d.state;
-document.getElementById('infoAvail').textContent = d.available ? '✅ Available' : '⏸ Unavailable';
-document.getElementById('infoLastDon').textContent = d.lastDon;
-document.getElementById('infoNextDon').textContent = d.nextDon;
-document.title = `BloodLink — ${d.name}`;
+async function loadDonorProfile() {
+  const params = new URLSearchParams(window.location.search);
+  const donorId = params.get('id');
+  if (!donorId) {
+    showError('No donor ID specified.');
+    return;
+  }
+  try {
+    const res = await fetch(`/bloodlink/api/donors/${donorId}`, { credentials: 'include' });
+    if (!res.ok) { showError('Donor not found.'); return; }
+    const data = await res.json();
+    if (!data.success || !data.donor) { showError('Donor not found.'); return; }
+    currentDonor = data.donor;
+    populatePage(data.donor);
+  } catch(e) {
+    showError('Could not load donor. Make sure Tomcat is running.');
+  }
+}
 
-// Compatibility
-const canDonateTo = compatibility[d.blood] || [];
-const grid = document.getElementById('compatGrid');
-grid.innerHTML = allGroups.map(g =>
-  `<div class="compat-item ${canDonateTo.includes(g) ? 'compat-yes' : 'compat-no'}">${g} ${canDonateTo.includes(g) ? '✓' : ''}</div>`
-).join('');
+function populatePage(d) {
+  const name = d.firstName + ' ' + d.lastName;
+  const donations = d.totalDonations || 0;
+
+  document.getElementById('avatarLetter').textContent = d.firstName[0].toUpperCase();
+  document.getElementById('donorName').textContent = name;
+  document.getElementById('donorMeta').textContent = `📍 ${d.city || '—'}, ${d.state || '—'}   ·   🎂 ${d.age || '—'} years old`;
+  document.getElementById('availTag').textContent = d.available ? '✅ Available to Donate' : '⏸ Currently Unavailable';
+  document.getElementById('donationsTag').textContent = `💉 ${donations} Donation${donations !== 1 ? 's' : ''}`;
+  document.getElementById('bloodBig').textContent = d.bloodGroup || '—';
+  document.getElementById('statDonations').textContent = donations;
+  document.getElementById('statLives').textContent = donations * 3;
+
+  if (d.createdAt) {
+    const months = Math.floor((Date.now() - new Date(d.createdAt)) / (1000 * 60 * 60 * 24 * 30));
+    document.getElementById('statSince').textContent = months >= 12 ? Math.floor(months/12) + 'yr' : months + 'mo';
+  }
+
+  document.getElementById('infoName').textContent = name;
+  document.getElementById('infoBlood').textContent = d.bloodGroup || '—';
+  document.getElementById('infoAge').textContent = (d.age || '—') + ' years';
+  document.getElementById('infoGender').textContent = d.gender || '—';
+  document.getElementById('infoCity').textContent = d.city || '—';
+  document.getElementById('infoState').textContent = d.state || '—';
+  document.getElementById('infoAvail').textContent = d.available ? '✅ Available' : '⏸ Unavailable';
+
+  if (d.lastDonation) {
+    const last = new Date(d.lastDonation);
+    const next = new Date(last); next.setMonth(next.getMonth() + 3);
+    const fmt = { day: 'numeric', month: 'short', year: 'numeric' };
+    document.getElementById('infoLastDon').textContent = last.toLocaleDateString('en-IN', fmt);
+    document.getElementById('infoNextDon').textContent = next.toLocaleDateString('en-IN', fmt);
+  } else {
+    document.getElementById('infoLastDon').textContent = '—';
+    document.getElementById('infoNextDon').textContent = '—';
+  }
+
+  document.title = `BloodLink — ${name}`;
+
+  // Compatibility grid
+  const blood = (d.bloodGroup || '').replace('−', '-');
+  const canDonateTo = compatibility[blood] || [];
+  document.getElementById('compatGrid').innerHTML = allGroups.map(g =>
+    `<div class="compat-item ${canDonateTo.includes(g) ? 'compat-yes' : 'compat-no'}">${g} ${canDonateTo.includes(g) ? '✓' : ''}</div>`
+  ).join('');
+
+  // Donation history
+  if (d.donationHistory && d.donationHistory.length) {
+    document.getElementById('historyList').innerHTML = d.donationHistory.map(h =>
+      `<div class="history-item"><div class="h-dot">💉</div><div class="h-text"><strong>${h.hospital || 'Unknown Hospital'}</strong><span>${new Date(h.date).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}</span></div></div>`
+    ).join('');
+  } else {
+    document.getElementById('historyList').innerHTML = '<p style="color:var(--text-light);font-size:0.88rem">No donation history available.</p>';
+  }
+}
+
+function showError(msg) {
+  document.getElementById('donorName').textContent = 'Not Found';
+  document.getElementById('donorMeta').textContent = msg;
+}
 
 function sendRequest() {
-  showToast(`📨 Request sent to ${d.name}! They will respond shortly.`);
+  if (!currentDonor) return;
+  const name = currentDonor.firstName + ' ' + currentDonor.lastName;
+  showToast(`📨 Request sent to ${name}! They will respond shortly.`);
 }
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3500);
 }
+
+loadDonorProfile();
 </script>
 </body>
 </html>

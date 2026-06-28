@@ -7,8 +7,6 @@
   <link rel="stylesheet" href="shared.css"/>
   <style>
     .profile-layout { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; padding: 3rem 0; }
-    
-    /* PROFILE CARD */
     .profile-card {
       background: var(--white); border: 1px solid var(--border);
       border-radius: 24px; overflow: hidden;
@@ -37,10 +35,7 @@
       margin-bottom: 1.2rem;
     }
     .profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.2rem; }
-    .pstat {
-      background: var(--bg2); border-radius: 12px; padding: 0.9rem;
-      text-align: center;
-    }
+    .pstat { background: var(--bg2); border-radius: 12px; padding: 0.9rem; text-align: center; }
     .pstat-num { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 700; color: var(--red); }
     .pstat-label { font-size: 0.72rem; color: var(--text-light); font-weight: 500; }
     .avail-toggle-btn {
@@ -58,8 +53,6 @@
       font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s;
     }
     .edit-profile-btn:hover { border-color: var(--red); color: var(--red); }
-
-    /* MAIN CONTENT */
     .profile-tabs { display: flex; gap: 0.3rem; border-bottom: 1px solid var(--border); margin-bottom: 1.8rem; }
     .ptab {
       padding: 0.75rem 1.2rem; font-size: 0.9rem; font-weight: 600;
@@ -70,8 +63,6 @@
     .ptab.active { color: var(--red); border-bottom-color: var(--red); }
     .tab-content { display: none; }
     .tab-content.active { display: block; animation: fadeUp 0.3s ease; }
-
-    /* HISTORY TABLE */
     .history-table { width: 100%; border-collapse: collapse; }
     .history-table th {
       font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
@@ -82,8 +73,6 @@
     .history-table td { padding: 0.9rem 1rem; font-size: 0.9rem; border-bottom: 1px solid var(--border); }
     .history-table tr:last-child td { border-bottom: none; }
     .history-table tr:hover td { background: var(--bg2); }
-
-    /* REQUESTS */
     .request-item {
       background: var(--white); border: 1px solid var(--border);
       border-radius: 14px; padding: 1.2rem 1.5rem;
@@ -98,8 +87,6 @@
     .req-actions { display: flex; gap: 0.5rem; }
     .btn-accept { background: #DCFCE7; color: #15803D; border: 1px solid #86EFAC; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
     .btn-decline { background: var(--bg2); color: var(--text-light); border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
-
-    /* SETTINGS */
     .settings-section { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.2rem; }
     .settings-section h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 1.2rem; color: var(--text); }
     .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0; border-bottom: 1px solid var(--border); }
@@ -112,7 +99,6 @@
     .slider::before { content: ''; position: absolute; width: 18px; height: 18px; background: white; border-radius: 50%; left: 3px; top: 3px; transition: 0.3s; }
     .toggle input:checked + .slider { background: var(--red); }
     .toggle input:checked + .slider::before { transform: translateX(20px); }
-
     @media(max-width:768px) {
       .profile-layout { grid-template-columns: 1fr; }
       .profile-card { position: static; }
@@ -142,7 +128,7 @@
       <div class="profile-card">
         <div class="profile-banner"></div>
         <div class="profile-avatar-wrap">
-          <div class="profile-avatar" id="profileAvatar">R</div>
+          <div class="profile-avatar" id="profileAvatar">?</div>
         </div>
         <div class="profile-body">
           <div class="profile-name" id="profileName">Loading...</div>
@@ -150,20 +136,20 @@
           <div class="profile-blood" id="profileBlood">--</div>
           <div class="profile-stats">
             <div class="pstat">
-              <div class="pstat-num">7</div>
+              <div class="pstat-num" id="statDonations">0</div>
               <div class="pstat-label">Donations</div>
             </div>
             <div class="pstat">
-              <div class="pstat-num">21</div>
+              <div class="pstat-num" id="statLives">0</div>
               <div class="pstat-label">Lives Saved</div>
             </div>
             <div class="pstat">
-              <div class="pstat-num">3</div>
+              <div class="pstat-num">0</div>
               <div class="pstat-label">Requests</div>
             </div>
             <div class="pstat">
-              <div class="pstat-num">2yr</div>
-              <div class="pstat-label">Member</div>
+              <div class="pstat-num" id="statMember">—</div>
+              <div class="pstat-label">Member Since</div>
             </div>
           </div>
           <button class="avail-toggle-btn avail-on" id="availBtn" onclick="toggleAvail()">
@@ -178,7 +164,7 @@
         <div class="profile-tabs">
           <button class="ptab active" onclick="showTab('overview')">Overview</button>
           <button class="ptab" onclick="showTab('history')">Donation History</button>
-          <button class="ptab" onclick="showTab('requests')">Requests (3)</button>
+          <button class="ptab" onclick="showTab('requests')">Requests</button>
           <button class="ptab" onclick="showTab('settings')">Settings</button>
         </div>
 
@@ -187,13 +173,13 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem">
             <div class="card">
               <div style="font-size:0.78rem;color:var(--text-light);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.8rem">Next Eligible Date</div>
-              <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--red)">Mar 15, 2025</div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--red)" id="nextEligible">—</div>
               <div style="font-size:0.82rem;color:var(--text-light);margin-top:0.3rem">3 months after last donation</div>
             </div>
             <div class="card">
               <div style="font-size:0.78rem;color:var(--text-light);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.8rem">Last Donation</div>
-              <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--text)">Dec 15, 2024</div>
-              <div style="font-size:0.82rem;color:var(--text-light);margin-top:0.3rem">City General Hospital, Mumbai</div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--text)" id="lastDonation">—</div>
+              <div style="font-size:0.82rem;color:var(--text-light);margin-top:0.3rem" id="lastDonationSub">No donations yet</div>
             </div>
           </div>
           <div class="card" style="margin-bottom:1.2rem">
@@ -209,8 +195,8 @@
           </div>
           <div class="card" style="background:linear-gradient(135deg,var(--red),#8B0000);border:none;color:white;text-align:center;padding:2rem">
             <div style="font-size:2rem;margin-bottom:0.5rem">🏆</div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;margin-bottom:0.3rem">Regular Donor Badge</div>
-            <div style="opacity:0.8;font-size:0.88rem">You've donated 7 times — you're a hero!</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;margin-bottom:0.3rem" id="badgeTitle">New Donor</div>
+            <div style="opacity:0.8;font-size:0.88rem" id="badgeSub">Welcome to BloodLink! Start your donation journey.</div>
           </div>
         </div>
 
@@ -221,14 +207,8 @@
               <thead><tr>
                 <th>Date</th><th>Hospital</th><th>City</th><th>Units</th><th>Certificate</th>
               </tr></thead>
-              <tbody>
-                <tr><td>Dec 15, 2024</td><td>City General Hospital</td><td>Mumbai</td><td>1 unit</td><td><a href="#" style="color:var(--red);font-weight:600;font-size:0.82rem">Download</a></td></tr>
-                <tr><td>Sep 10, 2024</td><td>Apollo Medical Center</td><td>Pune</td><td>1 unit</td><td><a href="#" style="color:var(--red);font-weight:600;font-size:0.82rem">Download</a></td></tr>
-                <tr><td>Jun 05, 2024</td><td>Lilavati Hospital</td><td>Mumbai</td><td>1 unit</td><td><a href="#" style="color:var(--red);font-weight:600;font-size:0.82rem">Download</a></td></tr>
-                <tr><td>Mar 20, 2024</td><td>KEM Hospital</td><td>Mumbai</td><td>1 unit</td><td><a href="#" style="color:var(--red);font-weight:600;font-size:0.82rem">Download</a></td></tr>
-                <tr><td>Nov 12, 2023</td><td>Hinduja Hospital</td><td>Mumbai</td><td>1 unit</td><td><a href="#" style="color:var(--red);font-weight:600;font-size:0.82rem">Download</a></td></tr>
-                <tr><td>Aug 08, 2023</td><td>Breach Candy Hospital</td><td>Mumbai</td><td>1 unit</td><td><a href="#" style="color:var(--red);font-weight:600;font-size:0.82rem">Download</a></td></tr>
-                <tr><td>Apr 22, 2023</td><td>Jaslok Hospital</td><td>Mumbai</td><td>1 unit</td><td><a href="#" style="color:var(--red);font-weight:600;font-size:0.82rem">Download</a></td></tr>
+              <tbody id="historyBody">
+                <tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:2rem">No donation history yet.</td></tr>
               </tbody>
             </table>
           </div>
@@ -236,42 +216,7 @@
 
         <!-- REQUESTS -->
         <div class="tab-content" id="tab-requests">
-          <div class="request-item">
-            <div style="display:flex;gap:1rem;align-items:center">
-              <div class="req-blood">A+</div>
-              <div class="req-details">
-                <h4>Sunita Kapoor's Family</h4>
-                <p>📍 Kokilaben Hospital, Mumbai · Needed: Today</p>
-              </div>
-            </div>
-            <div class="req-actions">
-              <button class="btn-accept" onclick="showToast('✅ Request accepted!')">Accept</button>
-              <button class="btn-decline" onclick="showToast('Request declined.')">Decline</button>
-            </div>
-          </div>
-          <div class="request-item">
-            <div style="display:flex;gap:1rem;align-items:center">
-              <div class="req-blood">A+</div>
-              <div class="req-details">
-                <h4>Rajesh Kumar</h4>
-                <p>📍 Lilavati Hospital, Mumbai · Needed: This week</p>
-              </div>
-            </div>
-            <div class="req-actions">
-              <button class="btn-accept" onclick="showToast('✅ Request accepted!')">Accept</button>
-              <button class="btn-decline" onclick="showToast('Request declined.')">Decline</button>
-            </div>
-          </div>
-          <div class="request-item" style="opacity:0.6">
-            <div style="display:flex;gap:1rem;align-items:center">
-              <div class="req-blood">A+</div>
-              <div class="req-details">
-                <h4>Meera Desai</h4>
-                <p>📍 KEM Hospital, Mumbai · Completed</p>
-              </div>
-            </div>
-            <span class="tag-available">✅ Completed</span>
-          </div>
+          <div style="text-align:center;color:var(--text-light);padding:3rem">No requests yet.</div>
         </div>
 
         <!-- SETTINGS -->
@@ -326,50 +271,106 @@
 
 <div class="toast" id="toast"></div>
 <script>
-// Load user from session
 async function loadProfile() {
+  // 1. Always fetch fresh user from API (session-based)
+  let u = null;
   try {
     const res = await fetch('/bloodlink/api/auth/me', { credentials: 'include' });
     if (res.status === 401) { location.href = 'login.html'; return; }
     const data = await res.json();
-    if (!data.success) { location.href = 'login.html'; return; }
-    const u = data.user;
-    const name = u.firstName + ' ' + u.lastName;
+    if (data.success && data.user) {
+      u = data.user;
+      localStorage.setItem('user', JSON.stringify(u));
+    }
+  } catch(e) {
+    // Fallback to localStorage if network fails
+    const stored = localStorage.getItem('user');
+    if (!stored) { location.href = 'login.html'; return; }
+    u = JSON.parse(stored);
+  }
 
-    // Update basic info
-    document.getElementById('profileName').textContent = name;
-    document.getElementById('profileEmail').textContent = u.email;
-    document.getElementById('profileAvatar').textContent = u.firstName[0].toUpperCase();
-    document.getElementById('infoName').textContent = name;
-    document.getElementById('infoPhone').textContent = u.phone || '—';
+  if (!u) { location.href = 'login.html'; return; }
 
-    // Load donor profile
-    try {
-      const res2 = await fetch('/bloodlink/api/donors/me', { credentials: 'include' });
-      if (res2.ok) {
-        const data2 = await res2.json();
-        if (data2.success && data2.donor) {
-          const d = data2.donor;
-          document.getElementById('profileBlood').textContent = d.bloodGroup || '—';
-          document.getElementById('infoBlood').textContent = d.bloodGroup || '—';
-          document.getElementById('infoAge').textContent = (d.age || '—') + ' years';
-          document.getElementById('infoCity').textContent = (d.city || '') + (d.state ? ', ' + d.state : '');
-          document.getElementById('infoWeight').textContent = (d.weight || '—') + ' kg';
-          isAvail = d.available;
-          const btn = document.getElementById('availBtn');
-          if (btn) {
-            btn.textContent = isAvail ? '✅ Available to Donate' : '⏸ Set as Unavailable';
-            btn.className = 'avail-toggle-btn ' + (isAvail ? 'avail-on' : 'avail-off');
-          }
-        }
+  // 2. Populate user fields
+  const firstName = u.firstName || u.first_name || '';
+  const lastName  = u.lastName  || u.last_name  || '';
+  const name = (firstName + ' ' + lastName).trim() || u.email;
+
+  document.getElementById('profileName').textContent = name;
+  document.getElementById('profileEmail').textContent = u.email;
+  document.getElementById('profileAvatar').textContent = (firstName[0] || u.email[0]).toUpperCase();
+  document.getElementById('infoName').textContent = name;
+  document.getElementById('infoPhone').textContent = u.phone || '—';
+
+  if (u.createdAt || u.created_at) {
+    const year = new Date(u.createdAt || u.created_at).getFullYear();
+    document.getElementById('statMember').textContent = year;
+  }
+
+  // 3. Fetch donor profile from API
+  try {
+    const res2 = await fetch('/bloodlink/api/donors/me', { credentials: 'include' });
+    if (res2.ok) {
+      const data2 = await res2.json();
+      if (data2.success && data2.donor) {
+        localStorage.setItem('donor', JSON.stringify(data2.donor));
+        applyDonorData(data2.donor);
+        return;
       }
-    } catch(e) {}
-  } catch(e) { console.log('Profile load error', e); }
+    }
+  } catch(e) {}
+
+  // 4. Fallback: try cached donor from localStorage
+  const storedDonor = localStorage.getItem('donor');
+  if (storedDonor) {
+    applyDonorData(JSON.parse(storedDonor));
+  }
+}
+
+function applyDonorData(d) {
+  document.getElementById('profileBlood').textContent = d.bloodGroup || '—';
+  document.getElementById('infoBlood').textContent = d.bloodGroup || '—';
+  document.getElementById('infoAge').textContent = (d.age || '—') + ' years';
+  document.getElementById('infoCity').textContent = (d.city || '') + (d.state ? ', ' + d.state : '');
+  document.getElementById('infoWeight').textContent = (d.weight || '—') + ' kg';
+
+  // Donations stats
+  const donations = d.totalDonations || 0;
+  document.getElementById('statDonations').textContent = donations;
+  document.getElementById('statLives').textContent = donations * 3;
+
+  // Badge
+  if (donations >= 10) {
+    document.getElementById('badgeTitle').textContent = 'Hero Donor Badge 🌟';
+    document.getElementById('badgeSub').textContent = 'You\'ve donated ' + donations + ' times — you\'re a hero!';
+  } else if (donations > 0) {
+    document.getElementById('badgeTitle').textContent = 'Regular Donor Badge';
+    document.getElementById('badgeSub').textContent = 'You\'ve donated ' + donations + ' times — keep it up!';
+  }
+
+  // Last donation & next eligible
+  if (d.lastDonation) {
+    const last = new Date(d.lastDonation);
+    document.getElementById('lastDonation').textContent = last.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+    const next = new Date(last);
+    next.setMonth(next.getMonth() + 3);
+    document.getElementById('nextEligible').textContent = next.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+  }
+
+  // Availability
+  isAvail = d.available;
+  const btn = document.getElementById('availBtn');
+  if (btn) {
+    btn.textContent = isAvail ? '✅ Available to Donate' : '⏸ Set as Unavailable';
+    btn.className = 'avail-toggle-btn ' + (isAvail ? 'avail-on' : 'avail-off');
+  }
 }
 
 async function doLogout() {
   await fetch('/bloodlink/api/auth/logout', { method: 'POST', credentials: 'include' });
   localStorage.removeItem('user');
+  localStorage.removeItem('donor');
+  localStorage.removeItem('loggedIn');
   location.href = 'login.html';
 }
 
@@ -379,12 +380,23 @@ function showTab(tab) {
   document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   event.target.classList.add('active');
-  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
 }
+
 let isAvail = true;
 function toggleAvail() {
   isAvail = !isAvail;
   const btn = document.getElementById('availBtn');
   btn.textContent = isAvail ? '✅ Available to Donate' : '⏸ Set as Unavailable';
   btn.className = 'avail-toggle-btn ' + (isAvail ? 'avail-on' : 'avail-off');
-  showToast(isAvail ? '✅ You are now available!' :
+  showToast(isAvail ? '✅ You are now available!' : '⏸ You are now unavailable.');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
