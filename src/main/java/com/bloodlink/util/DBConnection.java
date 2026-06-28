@@ -4,16 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- * DBConnection — manages MySQL connection.
- * Update DB_URL, DB_USER, DB_PASS to match your MySQL setup.
- */
 public class DBConnection {
 
     private static final String DB_URL  = System.getenv("DB_URL");
     private static final String DB_USER = System.getenv("DB_USER");
     private static final String DB_PASS = System.getenv("DB_PASS");
-
 
     static {
         try {
