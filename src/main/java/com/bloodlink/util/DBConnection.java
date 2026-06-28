@@ -6,19 +6,15 @@ import java.sql.SQLException;
 
 public class DBConnection {
 
-    private static final String DB_URL  = System.getenv("DB_URL");
-    private static final String DB_USER = System.getenv("DB_USER");
-    private static final String DB_PASS = System.getenv("DB_PASS");
-
-    static {
+    public static Connection getConnection() throws SQLException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("MySQL JDBC Driver not found!", e);
+            throw new SQLException("MySQL JDBC Driver not found!", e);
         }
-    }
-
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+        String url  = System.getenv("DB_URL");
+        String user = System.getenv("DB_USER");
+        String pass = System.getenv("DB_PASS");
+        return DriverManager.getConnection(url, user, pass);
     }
 }
