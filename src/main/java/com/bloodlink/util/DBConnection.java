@@ -37,6 +37,8 @@ public class DBConnection {
             throw new SQLException("Driver init failed: " + driverInitError);
         }
 
+        String urlDebug = url.replace("\n", "\\n").replace("\r", "\\r").replace(" ", "\\s");
+
         try {
             return DriverManager.getConnection(url, user, pass);
         } catch (SQLException e) {
@@ -45,7 +47,8 @@ public class DBConnection {
             while (en.hasMoreElements()) {
                 drivers.add(en.nextElement().getClass().getName());
             }
-            throw new SQLException("Connect failed. driverRegistered=" + driverRegistered +
+            throw new SQLException("Connect failed. urlLength=" + url.length() +
+                    " urlDebug=[" + urlDebug + "] driverRegistered=" + driverRegistered +
                     " registeredDrivers=[" + drivers + "] original=" + e.getMessage(), e);
         }
     }
