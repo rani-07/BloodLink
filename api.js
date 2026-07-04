@@ -5,7 +5,7 @@
 // ============================================
 
 const API = {
-  BASE: 'http://localhost:8080/bloodlink',
+  BASE: 'https://bloodlink-app-k6da.onrender.com',
 
   // ── HELPER ─────────────────────────────────
   async request(method, url, body = null) {
