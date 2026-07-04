@@ -23,10 +23,14 @@ public class DBConnection {
         }
     }
 
+    private static String trim(String s) {
+        return s == null ? null : s.trim();
+    }
+
     public static Connection getConnection() throws SQLException {
-        String url  = System.getenv("DB_URL");
-        String user = System.getenv("DB_USER");
-        String pass = System.getenv("DB_PASS");
+        String url  = trim(System.getenv("DB_URL"));
+        String user = trim(System.getenv("DB_USER"));
+        String pass = trim(System.getenv("DB_PASS"));
 
         if (url == null || user == null || pass == null) {
             throw new SQLException("Missing DB environment variables (DB_URL/DB_USER/DB_PASS). " +
@@ -37,19 +41,10 @@ public class DBConnection {
             throw new SQLException("Driver init failed: " + driverInitError);
         }
 
-        String urlDebug = url.replace("\n", "\\n").replace("\r", "\\r").replace(" ", "\\s");
-
         try {
             return DriverManager.getConnection(url, user, pass);
         } catch (SQLException e) {
-            StringJoiner drivers = new StringJoiner(", ");
-            Enumeration<Driver> en = DriverManager.getDrivers();
-            while (en.hasMoreElements()) {
-                drivers.add(en.nextElement().getClass().getName());
-            }
-            throw new SQLException("Connect failed. urlLength=" + url.length() +
-                    " urlDebug=[" + urlDebug + "] driverRegistered=" + driverRegistered +
-                    " registeredDrivers=[" + drivers + "] original=" + e.getMessage(), e);
+            throw new SQLException("Connect failed: " + e.getMessage(), e);
         }
     }
 }
