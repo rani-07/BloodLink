@@ -4,7 +4,7 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-FROM tomcat:9.0-jdk17-openjdk
+FROM tomcat:9.0-jdk17-temurin
 RUN rm -rf /usr/local/tomcat/webapps/ROOT
 COPY --from=build /app/target/bloodlink.war /usr/local/tomcat/webapps/ROOT.war
 EXPOSE 8080
